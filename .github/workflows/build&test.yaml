@@ -1,0 +1,80 @@
+name: 🛠️ Build & Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-go:
+    name: 🐹 Build Go Project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐹 Set Up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: 📦 Install Go Dependencies
+        run: go mod tidy
+
+      - name: 🛠️ Build Go Project
+        run: go build -o server ./cmd/server/main.go
+
+  build-vue:
+    name: 🌐 Build Vue Project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🌐 Set Up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install Vue Dependencies
+        run: |
+          cd ui
+          npm install
+
+      - name: 🖥️ Build Vue Project
+        run: |
+          cd ui
+          npm run build
+
+  test-go:
+    name: ✅ Run Go Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐹 Set Up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: 📦 Install Go Dependencies
+        run: go mod tidy
+
+      - name: ✅ Run Go Tests with Coverage
+        run: go test ./... -v -coverprofile=coverage.out
+
+      - name: 📊 Upload Code Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-code-coverage
+          path: coverage.out
+
+      - name: 📝 Publish Coverage to Coveralls
+        uses: shogo82148/actions-goveralls@v1
+        with:
+          path-to-profile: coverage.out
+          github-token: ${{ secrets.GITHUB_TOKEN }}
