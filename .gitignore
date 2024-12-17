@@ -1,0 +1,6 @@
+.env
+node_modules
+ui/dist
+/.vs
+/.vs
+/.vscode
