@@ -1,7 +1,7 @@
 <template>
   <v-container class="d-flex justify-center align-center fill-height">
     <v-card class="pa-4" max-width="600" outlined>
-      <v-card-title class="text-h5 text-center">Create a New Secret</v-card-title>
+      <v-card-title class="text-h5 text-center">Create a New Secret 🔑</v-card-title>
       <v-card-text>
         <v-form @submit.prevent="handleSubmit">
           <v-select
