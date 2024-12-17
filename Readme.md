@@ -14,6 +14,7 @@ GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-
 - **Expiration Settings**: Define how long a secret remains available.
 - **Responsive UI**: Built with Vue.js and Vuetify for a clean, modern look.
 - **Dockerized Deployment**: Simple setup with Docker and Docker Compose.
+- **Production and Debug Modes**: Easily switch between production and debug builds.
 
 ---
 
@@ -22,6 +23,7 @@ GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-
 ### **Prerequisites**
 
 - **Docker**: [Install Docker](https://docs.docker.com/get-docker/)
+- **Docker Compose**: [Install Docker Compose](https://docs.docker.com/compose/install/)
 
 ### **Clone the Repository**
 
@@ -34,16 +36,25 @@ cd gopherdrop
 
 ## 🛠️ **Build and Run**
 
-### **Development Setup**
+### **Production Setup**
 
-To run GopherDrop locally for development:
+To build and run GopherDrop in production mode:
 
 ```bash
 make build      # Build the Docker images
 make up         # Start the backend, frontend, and database services
 ```
 
-The application will be available at:
+### **Debug Setup**
+
+To build and run GopherDrop in debug mode:
+
+```bash
+make build-debug   # Build the Docker images with debug mode enabled
+make up      # Start the backend, frontend, and database services in debug mode
+```
+
+### **Access the Application**
 
 - **UI**: `http://localhost:8081`
 - **API**: `http://localhost:8080`
@@ -123,11 +134,18 @@ The UI provides a simple way to create and view sends.
 
 ## 🐳 **Docker Deployment**
 
-To deploy GopherDrop using Docker Compose:
+### **Production Deployment**
 
 ```bash
 make build
 make up
+```
+
+### **Debug Deployment**
+
+```bash
+make build-debug
+make up-debug
 ```
 
 ---
@@ -168,3 +186,4 @@ GopherDrop is licensed under the [MIT License](LICENSE).
 
 - **Issues**: [GitHub Issues](https://github.com/kek-Sec/gopherdrop/issues)
 - **Discussions**: Join the discussion in our [GitHub Discussions](https://github.com/kek-Sec/gopherdrop/discussions)
+

@@ -1,7 +1,12 @@
-.PHONY: build up down logs dbshell start-db stop-db test ui-build ui-up ui-down
+.PHONY: build build-debug up up-debug down logs dbshell start-db stop-db test ui-build ui-up ui-down
 
+# Default build (production)
 build:
 	docker-compose build
+
+# Build in debug mode
+build-debug:
+	docker-compose build --build-arg DEBUG=true
 
 up:
 	docker-compose up -d
@@ -30,3 +35,6 @@ ui-build:
 
 ui-up:
 	cd ui && npm run dev
+
+ui-down:
+	docker-compose stop ui
