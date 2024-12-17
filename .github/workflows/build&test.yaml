@@ -1,0 +1,66 @@
+name: 🛠️ Build & Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    name: 🏗️ Build and Test Projects
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        job: [go, vue, test]
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      # Checkout the repository
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      # Set up Go environment
+      - name: 🐹 Set Up Go
+        if: matrix.job == 'go' || matrix.job == 'test'
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      # Set up Node.js for Vue build
+      - name: 🌐 Set Up Node.js
+        if: matrix.job == 'vue'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Install Go dependencies
+      - name: 📦 Install Go Dependencies
+        if: matrix.job == 'go' || matrix.job == 'test'
+        run: go mod tidy
+
+      # Build Go project
+      - name: 🛠️ Build Go Project
+        if: matrix.job == 'go'
+        run: go build -o server ./cmd/server/main.go
+
+      # Install Vue.js dependencies
+      - name: 📦 Install Vue Dependencies
+        if: matrix.job == 'vue'
+        run: |
+          cd ui
+          npm install
+
+      # Build Vue.js project
+      - name: 🖥️ Build Vue Project
+        if: matrix.job == 'vue'
+        run: |
+          cd ui
+          npm run build
+
+      # Run Go tests
+      - name: ✅ Run Go Tests
+        if: matrix.job == 'test'
+        run: go test ./... -v
