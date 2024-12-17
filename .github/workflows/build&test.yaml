@@ -6,61 +6,75 @@ on:
       - main
 
 jobs:
-  build-and-test:
-    name: 🏗️ Build and Test Projects
+  build-go:
+    name: 🐹 Build Go Project
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        job: [go, vue, test]
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
-
     steps:
-      # Checkout the repository
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
 
-      # Set up Go environment
       - name: 🐹 Set Up Go
-        if: matrix.job == 'go' || matrix.job == 'test'
         uses: actions/setup-go@v5
         with:
           go-version: '1.22'
 
-      # Set up Node.js for Vue build
+      - name: 📦 Install Go Dependencies
+        run: go mod tidy
+
+      - name: 🛠️ Build Go Project
+        run: go build -o server ./cmd/server/main.go
+
+  build-vue:
+    name: 🌐 Build Vue Project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
       - name: 🌐 Set Up Node.js
-        if: matrix.job == 'vue'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # Install Go dependencies
-      - name: 📦 Install Go Dependencies
-        if: matrix.job == 'go' || matrix.job == 'test'
-        run: go mod tidy
-
-      # Build Go project
-      - name: 🛠️ Build Go Project
-        if: matrix.job == 'go'
-        run: go build -o server ./cmd/server/main.go
-
-      # Install Vue.js dependencies
       - name: 📦 Install Vue Dependencies
-        if: matrix.job == 'vue'
         run: |
           cd ui
           npm install
 
-      # Build Vue.js project
       - name: 🖥️ Build Vue Project
-        if: matrix.job == 'vue'
         run: |
           cd ui
           npm run build
 
-      # Run Go tests
-      - name: ✅ Run Go Tests
-        if: matrix.job == 'test'
-        run: go test ./... -v
+  test-go:
+    name: ✅ Run Go Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐹 Set Up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: 📦 Install Go Dependencies
+        run: go mod tidy
+
+      - name: ✅ Run Go Tests with Coverage
+        run: go test ./... -v -coverprofile=coverage.out
+
+      - name: 📊 Upload Code Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-code-coverage
+          path: coverage.out
+
+      - name: 📝 Publish Coverage to Coveralls
+        uses: shogo82148/actions-goveralls@v1
+        with:
+          path-to-profile: coverage.out
+          github-token: ${{ secrets.GITHUB_TOKEN }}
