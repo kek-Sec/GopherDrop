@@ -1,12 +1,8 @@
-Here's a comprehensive **README** for your project, designed to be engaging and informative for Open Source Software (OSS) communities.
-
----
-
-# 🛠️ **GopherDrop** – Secure One-Time Secret Sharing for Gophers 🏁
+# 🛠️ **GopherDrop** – Secure One-Time Secret Sharing 🏁
 
 GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-time secrets and files, inspired by Bitwarden's Send feature. Built with **Go**, **Vue.js**, and **Vuetify**, GopherDrop is simple to deploy, easy to use, and designed with security in mind.
 
-![GopherDrop Logo Placeholder]
+![GopherDrop Banner](ui/src/assets/Images/banner.png)
 
 ---
 
@@ -26,7 +22,6 @@ GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-
 ### **Prerequisites**
 
 - **Docker**: [Install Docker](https://docs.docker.com/get-docker/)
-- **Docker Compose**: [Install Docker Compose](https://docs.docker.com/compose/install/)
 
 ### **Clone the Repository**
 
@@ -73,16 +68,16 @@ GopherDrop uses environment variables for configuration. These can be set in the
 
 ### **Environment Variables**
 
-| Variable       | Description                     | Default Value                  |
-|----------------|---------------------------------|--------------------------------|
-| `DB_HOST`     | Database host                   | `db`                          |
-| `DB_USER`     | Database username               | `user`                        |
-| `DB_PASSWORD` | Database password               | `pass`                        |
-| `DB_NAME`     | Database name                   | `gopherdropdb`                |
-| `SECRET_KEY`  | Secret key for encryption       | `supersecretkeysupersecretkey32` |
-| `LISTEN_ADDR` | API listen address              | `:8080`                       |
-| `STORAGE_PATH`| Path for storing uploaded files | `/app/storage`                |
-| `MAX_FILE_SIZE` | Maximum file size in bytes    | `10485760` (10 MB)            |
+| Variable         | Description                     | Default Value                        |
+|------------------|---------------------------------|--------------------------------------|
+| `DB_HOST`        | Database host                   | `db`                                |
+| `DB_USER`        | Database username               | `user`                              |
+| `DB_PASSWORD`    | Database password               | `pass`                              |
+| `DB_NAME`        | Database name                   | `gopherdropdb`                      |
+| `SECRET_KEY`     | Secret key for encryption       | `supersecretkeysupersecretkey32`    |
+| `LISTEN_ADDR`    | API listen address              | `:8080`                             |
+| `STORAGE_PATH`   | Path for storing uploaded files | `/app/storage`                      |
+| `MAX_FILE_SIZE`  | Maximum file size in bytes      | `10485760` (10 MB)                  |
 
 ---
 
@@ -90,11 +85,11 @@ GopherDrop uses environment variables for configuration. These can be set in the
 
 ### **API Endpoints**
 
-| Method | Endpoint                  | Description                               |
-|--------|---------------------------|-------------------------------------------|
-| `POST` | `/send`                  | Create a new send (text or file)          |
-| `GET`  | `/send/:id`              | Retrieve a send by its hash               |
-| `GET`  | `/send/:id/check`        | Check if a send requires a password       |
+| Method | Endpoint           | Description                              |
+|--------|--------------------|------------------------------------------|
+| `POST` | `/send`            | Create a new send (text or file)         |
+| `GET`  | `/send/:id`        | Retrieve a send by its hash              |
+| `GET`  | `/send/:id/check`  | Check if a send requires a password      |
 
 ### **Example: Create a Send**
 
@@ -122,7 +117,7 @@ The UI provides a simple way to create and view sends.
 
 1. Open the provided link.
 2. If password-protected, enter the password.
-3. View or copy the secret.
+3. View or copy the secret. Download files directly from the UI.
 
 ---
 
@@ -173,14 +168,3 @@ GopherDrop is licensed under the [MIT License](LICENSE).
 
 - **Issues**: [GitHub Issues](https://github.com/kek-Sec/gopherdrop/issues)
 - **Discussions**: Join the discussion in our [GitHub Discussions](https://github.com/kek-Sec/gopherdrop/discussions)
-
----
-
-## 🌟 **Acknowledgements**
-
-Built with ❤️ by the **GopherDrop** community.
-
----
-
-**Let’s drop some secrets securely! 🐿️🔐**
-
