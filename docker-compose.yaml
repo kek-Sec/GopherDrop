@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: gopherdropdb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d gopherdropdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    environment:
+      DB_HOST: db
+      DB_USER: user
+      DB_PASSWORD: pass
+      DB_NAME: gopherdropdb
+      DB_SSLMODE: disable
+      SECRET_KEY: supersecretkeysupersecretkey32
+      LISTEN_ADDR: :8080
+      STORAGE_PATH: /app/storage
+      MAX_FILE_SIZE: 10485760
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    depends_on:
+      - app
+    environment:
+      VITE_API_URL: "http://localhost:8080"
+    ports:
+      - "8081:80"
+
+volumes:
+  db_data: {}
