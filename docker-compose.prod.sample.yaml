@@ -42,8 +42,6 @@ services:
   ui:
     image: ghcr.io/kek-sec/gopherdrop:ui-latest
     container_name: gopherdrop_ui
-    environment:
-      VITE_API_URL: "http://app:8080"
     depends_on:
       - app
     ports:
