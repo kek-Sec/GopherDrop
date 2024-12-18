@@ -15,8 +15,6 @@ FROM nginx:alpine
 LABEL org.opencontainers.image.title="GopherDrop UI" \
       org.opencontainers.image.description="UI for GopherDrop, a secure one-time secret sharing service" \
       org.opencontainers.image.source="https://github.com/kek-Sec/gopherdrop" \
-      org.opencontainers.image.revision="${GIT_COMMIT_SHA}" \
-      org.opencontainers.image.version="${GIT_VERSION}" \
       org.opencontainers.image.url="https://github.com/kek-Sec/gopherdrop" \
       org.opencontainers.image.documentation="https://github.com/kek-Sec/gopherdrop" \
       org.opencontainers.image.licenses="MIT"

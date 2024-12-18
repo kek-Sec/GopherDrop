@@ -1,4 +1,4 @@
-name: 🚀 Build and Push Docker Images
+name: 🐳 Build and Push Docker Image
 
 on:
   push:
@@ -6,59 +6,42 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
-  backend-build:
-    name: 🐳 Build and Push Backend Docker Image
+  build-and-push:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@v3
+      - name: 🚀 Checkout Code
+        uses: actions/checkout@v4
 
-      - name: ⚙️ Set Up Docker Buildx
+      - name: 🏗️ Set Build Variables
+        run: |
+          echo "GIT_COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+          echo "GIT_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+
+      - name: 🛠️ Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: 🔑 Login to GitHub Container Registry
+      - name: 🔐 Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.TOKEN }}
 
-      - name: 🛠️ Build and Push Backend Image
+      - name: 📦 Build and Push Backend Image
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
           push: true
           tags: ghcr.io/kek-sec/gopherdrop:backend-latest
+          labels: |
+            org.opencontainers.image.source=https://github.com/kek-sec/gopherdrop
+            org.opencontainers.image.revision=${{ env.GIT_COMMIT_SHA }}
+            org.opencontainers.image.version=${{ env.GIT_VERSION }}
           cache-from: type=registry,ref=ghcr.io/kek-sec/gopherdrop:backend-latest
-          cache-to: type=inline
-
-  ui-build:
-    name: 🌐 Build and Push UI Docker Image
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: ⚙️ Set Up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: 🔑 Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🛠️ Build and Push UI Image
-        uses: docker/build-push-action@v4
-        with:
-          context: ./ui
-          file: ./ui/Dockerfile
-          push: true
-          tags: ghcr.io/kek-sec/gopherdrop:ui-latest
-          cache-from: type=registry,ref=ghcr.io/kek-sec/gopherdrop:ui-latest
           cache-to: type=inline
