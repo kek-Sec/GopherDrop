@@ -86,6 +86,7 @@ jobs:
           build-args: |
             GIT_COMMIT_SHA=${{ env.GIT_COMMIT_SHA }}
             GIT_VERSION=${{ env.GIT_VERSION }}
+            VITE_API_URL=http://app:8080
           labels: |
             org.opencontainers.image.source=https://github.com/kek-sec/gopherdrop
             org.opencontainers.image.revision=${{ env.GIT_COMMIT_SHA }}
