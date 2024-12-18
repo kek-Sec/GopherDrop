@@ -155,47 +155,7 @@ curl -X POST http://localhost:8080/send \
 
 ### **Production `docker-compose.yml`**
 
-```yaml
-services:
-  db:
-    image: postgres:17-alpine
-    container_name: gopherdrop_db
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: gopherdropdb
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - gopherdrop_net
-
-  backend:
-    image: ghcr.io/kek-sec/gopherdrop:backend-latest
-    container_name: gopherdrop_backend
-    env_file: .env
-    depends_on:
-      - db
-    networks:
-      - gopherdrop_net
-    ports:
-      - "8080:8080"
-
-  frontend:
-    image: ghcr.io/kek-sec/gopherdrop-ui:latest
-    container_name: gopherdrop_frontend
-    depends_on:
-      - backend
-    networks:
-      - gopherdrop_net
-    ports:
-      - "8081:80"
-
-volumes:
-  db_data:
-
-networks:
-  gopherdrop_net:
-```
+> docker-compose.prod.sample.yaml
 
 ---
 
