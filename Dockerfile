@@ -20,6 +20,16 @@ FROM alpine:3.18
 WORKDIR /app
 COPY --from=builder /app/server .
 
+# Add OCI Image Spec labels
+LABEL org.opencontainers.image.title="GopherDrop Backend" \
+      org.opencontainers.image.description="Backend for GopherDrop, a secure one-time secret sharing service" \
+      org.opencontainers.image.source="https://github.com/kek-Sec/gopherdrop" \
+      org.opencontainers.image.revision="${GIT_COMMIT_SHA}" \
+      org.opencontainers.image.version="${GIT_VERSION}" \
+      org.opencontainers.image.url="https://github.com/kek-Sec/gopherdrop" \
+      org.opencontainers.image.documentation="https://github.com/kek-Sec/gopherdrop" \
+      org.opencontainers.image.licenses="MIT"
+
 # Environment variables
 ENV LISTEN_ADDR=:8080
 ENV STORAGE_PATH=/app/storage
