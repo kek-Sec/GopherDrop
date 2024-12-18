@@ -40,6 +40,11 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ghcr.io/kek-sec/gopherdrop:backend-latest
+          annotations: |
+            org.opencontainers.image.description=Backend API for GopherDrop, a secure one-time secret sharing service
+          build-args: |
+            GIT_COMMIT_SHA=${{ env.GIT_COMMIT_SHA }}
+            GIT_VERSION=${{ env.GIT_VERSION }}
           labels: |
             org.opencontainers.image.source=https://github.com/kek-sec/gopherdrop
             org.opencontainers.image.revision=${{ env.GIT_COMMIT_SHA }}
@@ -76,17 +81,14 @@ jobs:
           file: ./ui/Dockerfile
           push: true
           tags: ghcr.io/kek-sec/gopherdrop:ui-latest
+          annotations: |
+            org.opencontainers.image.description=UI for GopherDrop, a secure one-time secret sharing service
+          build-args: |
+            GIT_COMMIT_SHA=${{ env.GIT_COMMIT_SHA }}
+            GIT_VERSION=${{ env.GIT_VERSION }}
           labels: |
             org.opencontainers.image.source=https://github.com/kek-sec/gopherdrop
             org.opencontainers.image.revision=${{ env.GIT_COMMIT_SHA }}
             org.opencontainers.image.version=${{ env.GIT_VERSION }}
           cache-from: type=registry,ref=ghcr.io/kek-sec/gopherdrop:ui-latest
           cache-to: type=inline
-
-  notify:
-    name: 📢 Notify Success
-    runs-on: ubuntu-latest
-    needs: [build-backend, build-ui]
-    steps:
-      - name: ✅ Success Notification
-        run: echo "Both backend and UI images have been successfully built and pushed!"

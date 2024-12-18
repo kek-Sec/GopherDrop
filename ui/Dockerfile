@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-alpine as build
+FROM node:18-alpine AS build
 
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -12,6 +12,9 @@ RUN npm run build
 FROM nginx:alpine
 
 # Add OCI Image Spec labels
+ARG GIT_COMMIT_SHA
+ARG GIT_VERSION
+
 LABEL org.opencontainers.image.title="GopherDrop UI" \
       org.opencontainers.image.description="UI for GopherDrop, a secure one-time secret sharing service" \
       org.opencontainers.image.source="https://github.com/kek-Sec/gopherdrop" \

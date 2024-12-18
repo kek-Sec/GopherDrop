@@ -4,8 +4,10 @@ FROM golang:1.22-alpine AS builder
 WORKDIR /app
 COPY . .
 
-# Add a build argument for debug mode
+# Add build arguments for debug mode and versioning
 ARG DEBUG=false
+ARG GIT_COMMIT_SHA
+ARG GIT_VERSION
 
 # Set build tags based on the DEBUG flag
 RUN if [ "$DEBUG" = "true" ]; then \
