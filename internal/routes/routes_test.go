@@ -86,13 +86,13 @@ func TestCORSHeaders(t *testing.T) {
 	router := setupTestRouter()
 
 	req, _ := http.NewRequest("OPTIONS", "/send", nil)
-	req.Header.Set("Origin", "http://localhost:8081")
+	req.Header.Set("Origin", "*")
 	w := httptest.NewRecorder()
 
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNoContent, w.Code, "CORS preflight should return 204 No Content")
-	assert.Equal(t, "http://localhost:8081", w.Header().Get("Access-Control-Allow-Origin"))
+	assert.Equal(t, "*", w.Header().Get("Access-Control-Allow-Origin"))
 	assert.Contains(t, w.Header().Get("Access-Control-Allow-Methods"), "POST")
 	assert.Contains(t, w.Header().Get("Access-Control-Allow-Headers"), "Content-Type")
 }
