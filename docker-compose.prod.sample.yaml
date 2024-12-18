@@ -7,14 +7,14 @@ services:
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: gopherdropdb
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - ./db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d gopherdropdb"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - gopherdrop
+      - goepher_net
 
   app:
     image: ghcr.io/kek-sec/gopherdrop:backend-latest
@@ -30,31 +30,29 @@ services:
       STORAGE_PATH: /app/storage
       MAX_FILE_SIZE: 10485760
     volumes:
-      - app_storage:/app/storage
+      - ./app_storage:/app/storage
     depends_on:
       db:
         condition: service_healthy
     networks:
-      - gopherdrop
+      - goepher_net
     ports:
       - "8080:8080"
 
   ui:
-    image: ghcr.io/kek-sec/gopherdrop:ui-latest
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: "http://app:8080"
     container_name: gopherdrop_ui
     depends_on:
       - app
+    networks:
+      - goepher_net
     ports:
       - "8081:80"
-    networks:
-      - gopherdrop
-
-volumes:
-  db_data:
-    driver: local
-  app_storage:
-    driver: local
 
 networks:
-  gopherdrop:
-    driver: bridge
+  goepher_net:
+    external: true

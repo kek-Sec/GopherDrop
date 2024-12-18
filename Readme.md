@@ -1,12 +1,7 @@
-Here's the updated **README** with the requested changes:  
-- **Removed** the "Security Best Practices" section.  
-- **Updated** PostgreSQL to use a more recent version.  
-- **Removed** the `version` key from `docker-compose.yaml`.  
-- **Added** instructions on how to use a `.env` file to store secrets.
-
----
-
 # 🛠️ **GopherDrop** – Secure One-Time Secret Sharing 🏁
+
+### Demo: [https://gopherdrop.yup.gr](https://gopherdrop.yup.gr)
+
 
 GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-time secrets and files, inspired by Bitwarden's Send feature. Built with **Go**, **Vue.js**, and **Vuetify**, GopherDrop is designed for simplicity, security, and ease of deployment.
 
@@ -154,6 +149,8 @@ curl -X POST http://localhost:8080/send \
 ## 🐳 **Docker Deployment**
 
 ### **Production `docker-compose.yml`**
+
+> clone repository
 
 > docker-compose.prod.sample.yaml
 
