@@ -25,12 +25,15 @@ jobs:
         run: |
           echo "GIT_COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
           echo "GIT_VERSION=$(git describe --tags --always --long --dirty)" >> $GITHUB_ENV
+          DATE_TAG=$(date +"%d%m%Y")
+          echo "DATE_TAG=${DATE_TAG}" >> $GITHUB_ENV
 
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "IMAGE_TAGS=latest,${GIT_VERSION}" >> $GITHUB_ENV
+            echo "IMAGE_TAGS=latest,${DATE_TAG}" >> $GITHUB_ENV
             echo "CACHE_TO=" >> $GITHUB_ENV
           elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "IMAGE_TAGS=rc-${GIT_VERSION}" >> $GITHUB_ENV
+            PR_NUMBER=${{ github.event.pull_request.number }}
+            echo "IMAGE_TAGS=rc-${PR_NUMBER}-${DATE_TAG}" >> $GITHUB_ENV
             echo "CACHE_TO=type=inline" >> $GITHUB_ENV
           else
             echo "IMAGE_TAGS=unknown" >> $GITHUB_ENV
