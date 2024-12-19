@@ -55,8 +55,25 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Build and Push Image to GitHub and Docker Hub
-      - name: 📦 Build and Push Image
+      - name: 📦 Build and Push Image to GHCR (PR)
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/kek-sec/gopherdrop:${{ env.IMAGE_TAGS }}
+          annotations: |
+            org.opencontainers.image.description=GopherDrop, a secure one-time secret sharing service
+          build-args: |
+            VERSION=${{ env.VERSION }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/kek-sec/gopherdrop
+          cache-from: type=registry,ref=ghcr.io/kek-sec/gopherdrop:latest
+          cache-to: type=registry,ref=ghcr.io/kek-sec/gopherdrop:latest
+
+      - name: 📦 Build and Push Image to GHCR and Docker Hub (Main)
+        if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v4
         with:
           context: .

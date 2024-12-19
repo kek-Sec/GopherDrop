@@ -1,5 +1,8 @@
 # 🛠️ **GopherDrop** – Secure One-Time Secret Sharing 🏁
 
+![Docker Image Version](https://img.shields.io/docker/v/petrakisg/gopherdrop?sort=semver&label=Docker%20Image%20Version&logo=docker)
+
+
 ### Demo: [https://gopherdrop.yup.gr](http://gopherdrop.yup.gr)
 
 GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-time secrets and files, inspired by Bitwarden's Send feature. Built with **Go**, **Vue.js**, and **Vuetify**, GopherDrop is designed for simplicity, security, and ease of deployment.
