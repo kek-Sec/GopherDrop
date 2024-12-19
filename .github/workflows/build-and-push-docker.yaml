@@ -63,6 +63,7 @@ jobs:
           build-args: |
             GIT_COMMIT_SHA=${{ env.GIT_COMMIT_SHA }}
             GIT_VERSION=${{ env.GIT_VERSION }}
+            DATE_TAG=${{ env.DATE_TAG }}
           labels: |
             org.opencontainers.image.source=https://github.com/kek-sec/gopherdrop
             org.opencontainers.image.revision=${{ env.GIT_COMMIT_SHA }}

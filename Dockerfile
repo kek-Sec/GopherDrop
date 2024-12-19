@@ -5,8 +5,8 @@ WORKDIR /app
 COPY . .
 
 # Generate Go version tag based on the current date in ddMMyyyy format
-ARG GO_VERSION_TAG=$(date +"%d%m%Y")
-ENV GO_VERSION_TAG=${GO_VERSION_TAG}
+ARG DATE_TAG
+ENV DATE_TAG=${DATE_TAG}
 
 # Add build arguments for debug mode and versioning
 ARG DEBUG=false
@@ -19,7 +19,7 @@ ENV GIN_MODE=${GIN_MODE}
 RUN if [ "$DEBUG" = "true" ]; then \
       go mod download && go build -o server -tags debug -ldflags="-X main.version=DEBUG" ./cmd/server/main.go; \
     else \
-      go mod download && go build -o server -ldflags="-X main.version=${GO_VERSION_TAG}-${GIT_VERSION}-${GIT_COMMIT_SHA}" ./cmd/server/main.go; \
+      go mod download && go build -o server -ldflags="-X main.version=${DATE_TAG}-${GIT_VERSION}-${GIT_COMMIT_SHA}" ./cmd/server/main.go; \
     fi
 
 # Stage 2: Build the Vue.js Frontend
