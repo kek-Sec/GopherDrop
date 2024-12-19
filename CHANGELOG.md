@@ -1,3 +1,7 @@
+### [1.0.4]
+- Reworked CD pipelines to follow semver tagging
+- added version.yaml
+
 ### [1.0.1]
 
 #### Added
