@@ -4,22 +4,18 @@ FROM golang:1.22-alpine AS backend-builder
 WORKDIR /app
 COPY . .
 
-# Generate Go version tag based on the current date in ddMMyyyy format
-ARG DATE_TAG
-ENV DATE_TAG=${DATE_TAG}
-
 # Add build arguments for debug mode and versioning
 ARG DEBUG=false
 ARG GIN_MODE=release
-ARG GIT_COMMIT_SHA
-ARG GIT_VERSION
 ENV GIN_MODE=${GIN_MODE}
+ARG VERSION
+ENV VERSION=${VERSION}
 
 # Set build tags based on the DEBUG flag and include versioning information
 RUN if [ "$DEBUG" = "true" ]; then \
       go mod download && go build -o server -tags debug -ldflags="-X main.version=DEBUG" ./cmd/server/main.go; \
     else \
-      go mod download && go build -o server -ldflags="-X main.version=${DATE_TAG}-${GIT_VERSION}-${GIT_COMMIT_SHA}" ./cmd/server/main.go; \
+      go mod download && go build -o server -ldflags="-X main.version=${VERSION}" ./cmd/server/main.go; \
     fi
 
 # Stage 2: Build the Vue.js Frontend
@@ -31,10 +27,7 @@ RUN npm install --legacy-peer-deps
 
 # Add build argument for the API URL and versioning
 ARG VITE_API_URL="/api"
-ARG GIT_VERSION
-ARG GIT_COMMIT_SHA
 ENV VITE_API_URL=${VITE_API_URL}
-ENV VITE_APP_VERSION=${GIT_VERSION}-${GIT_COMMIT_SHA}
 
 COPY ui ./ 
 RUN npm run build
@@ -49,8 +42,6 @@ ARG GIT_VERSION
 LABEL org.opencontainers.image.title="GopherDrop" \
       org.opencontainers.image.description="GopherDrop - Secure one-time secret sharing service" \
       org.opencontainers.image.source="https://github.com/kek-Sec/gopherdrop" \
-      org.opencontainers.image.revision="${GIT_COMMIT_SHA}" \
-      org.opencontainers.image.version="${GIT_VERSION}" \
       org.opencontainers.image.url="https://github.com/kek-Sec/gopherdrop" \
       org.opencontainers.image.documentation="https://github.com/kek-Sec/gopherdrop" \
       org.opencontainers.image.licenses="MIT"

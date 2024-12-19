@@ -21,24 +21,22 @@ jobs:
       - name: 🚀 Checkout Code
         uses: actions/checkout@v4
 
-      - name: 🏗️ Set Build Variables
-        run: |
-          echo "GIT_COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
-          echo "GIT_VERSION=$(git describe --tags --always --long --dirty)" >> $GITHUB_ENV
-          DATE_TAG=$(date +"%d%m%Y")
-          echo "DATE_TAG=${DATE_TAG}" >> $GITHUB_ENV
+#get version from version.yaml
+#if on main tag should be the semver from version.yaml
+#if on PR tag should be rc-semver-PR_NUMBER
 
-          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "IMAGE_TAGS=latest,${DATE_TAG}" >> $GITHUB_ENV
-            echo "CACHE_TO=" >> $GITHUB_ENV
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            PR_NUMBER=${{ github.event.pull_request.number }}
-            echo "IMAGE_TAGS=rc-${PR_NUMBER}-${DATE_TAG}" >> $GITHUB_ENV
-            echo "CACHE_TO=type=inline" >> $GITHUB_ENV
+      - name: 📁 Get version
+        run: |
+          echo "VERSION=$(cat version.yaml | shyaml get-value version)" >> $GITHUB_ENV
+
+      - name: 🏗️ Set Build tags
+        run: |
+          if [ $GITHUB_REF = 'refs/heads/main' ]; then
+            echo "IMAGE_TAGS=$VERSION" >> $GITHUB_ENV
           else
-            echo "IMAGE_TAGS=unknown" >> $GITHUB_ENV
-            echo "CACHE_TO=" >> $GITHUB_ENV
+            echo "IMAGE_TAGS=rc-$VERSION-$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
           fi
+          
 
       - name: 🛠️ Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -61,12 +59,8 @@ jobs:
           annotations: |
             org.opencontainers.image.description=GopherDrop, a secure one-time secret sharing service
           build-args: |
-            GIT_COMMIT_SHA=${{ env.GIT_COMMIT_SHA }}
-            GIT_VERSION=${{ env.GIT_VERSION }}
-            DATE_TAG=${{ env.DATE_TAG }}
+            VERSION=${{ env.VERSION }}
           labels: |
             org.opencontainers.image.source=https://github.com/kek-sec/gopherdrop
-            org.opencontainers.image.revision=${{ env.GIT_COMMIT_SHA }}
-            org.opencontainers.image.version=${{ env.GIT_VERSION }}
           cache-from: type=registry,ref=ghcr.io/kek-sec/gopherdrop:latest
-          cache-to: ${{ env.CACHE_TO }}
+          cache-to: type=registry,ref=ghcr.io/kek-sec/gopherdrop:latest
