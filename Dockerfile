@@ -6,12 +6,14 @@ COPY . .
 
 # Add build arguments for debug mode and versioning
 ARG DEBUG=false
+ARG GIN_MODE=release
 ARG GIT_COMMIT_SHA
 ARG GIT_VERSION
+ENV GIN_MODE=${GIN_MODE}
 
 # Set build tags based on the DEBUG flag and include versioning information
 RUN if [ "$DEBUG" = "true" ]; then \
-      go mod download && go build -o server -tags debug -ldflags="-X main.version=${GIT_VERSION}-${GIT_COMMIT_SHA}" ./cmd/server/main.go; \
+      go mod download && go build -o server -tags debug -ldflags="-X main.version=DEBUG" ./cmd/server/main.go; \
     else \
       go mod download && go build -o server -ldflags="-X main.version=${GIT_VERSION}-${GIT_COMMIT_SHA}" ./cmd/server/main.go; \
     fi
