@@ -3,6 +3,7 @@
  * Uses fetch for HTTP requests.
  */
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+console.log('API_URL:', API_URL);
 
 export async function createSend(formData) {
   const res = await fetch(`${API_URL}/send`, {
@@ -24,15 +25,13 @@ export async function createSend(formData) {
 }
 
 export async function getSend(hash, password = '') {
-  const url = new URL(`${API_URL}/send/${hash}`)
-  if (password) url.searchParams.set('password', password)
+  const API_BASE_URL = `${window.location.origin}/api`
+  const url = new URL(`${API_BASE_URL}/send/${hash}`)
 
-  console.log('Fetching secret from:', url.href)
+  if (password) url.searchParams.set('password', password)
 
   const res = await fetch(url)
 
-  console.log('Response status:', res.status)
-  console.log('Response headers:', [...res.headers.entries()])
 
   if (res.status === 404) {
     console.log('Secret not found.')

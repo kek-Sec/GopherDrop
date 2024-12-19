@@ -13,15 +13,13 @@ GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-
 
 1. [Features](#-features)  
 2. [Installation](#-installation)  
-3. [Build and Run](#️-build-and-run)  
-4. [Configuration](#️-configuration)  
-5. [Endpoints](#️-endpoints)  
+3. [Build and Run](#-build-and-run)  
+4. [Configuration](#-configuration)  
+5. [Endpoints](#-endpoints)  
 6. [Docker Deployment](#-docker-deployment)  
-7. [Persistence](#-persistence)  
-8. [Reverse Proxy Support](#-reverse-proxy-support)  
-9. [Contributing](#-contributing)  
-10. [License](#-license)  
-11. [Community and Support](#-community-and-support)  
+7. [Contributing](#-contributing)  
+8. [License](#-license)  
+9. [Community and Support](#-community-and-support)  
 
 ---
 
@@ -34,6 +32,15 @@ GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-
 - **Responsive UI**: Built with Vue.js and Vuetify for a modern user experience.  
 - **Dockerized Deployment**: Simple setup with Docker and Docker Compose.  
 - **Production and Debug Modes**: Easily switch between production and debug builds.  
+
+
+---
+
+## 🐳 **Docker Deployment**
+
+### **Production `docker-compose.yml`**
+
+> docker-compose.prod.sample.yaml
 
 ---
 
@@ -50,12 +57,11 @@ GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-
 git clone https://github.com/kek-Sec/gopherdrop.git
 cd gopherdrop
 ```
-
 ---
 
 ## 🛠️ **Build and Run**
 
-### **Production Setup**
+### **Local Setup**
 
 To build and run GopherDrop in production mode:
 
@@ -84,13 +90,6 @@ make down
 ```bash
 make test
 ```
-
-### **Access the Application**
-
-- **UI**: `http://localhost:8081`  
-- **API**: `http://localhost:8080`  
-
----
 
 ## ⚙️ **Configuration**
 
@@ -135,57 +134,6 @@ MAX_FILE_SIZE=10485760
 | `GET`  | `/send/:id`        | Retrieve a send by its hash              |
 | `GET`  | `/send/:id/check`  | Check if a send requires a password      |
 
-### **Example: Create a Send**
-
-```bash
-curl -X POST http://localhost:8080/send \
-  -F "type=text" \
-  -F "data=This is a secret message" \
-  -F "password=mysecurepassword"
-```
-
----
-
-## 🐳 **Docker Deployment**
-
-### **Production `docker-compose.yml`**
-
-> clone repository
-
-> docker-compose.prod.sample.yaml
-
----
-
-## 🌐 **Reverse Proxy Support**
-
-### **Nginx Configuration**
-
-Create a `nginx.conf`:
-
-```nginx
-server {
-  listen 80;
-
-  location / {
-    proxy_pass http://frontend:80;
-  }
-
-  location /api/ {
-    proxy_pass http://backend:8080/;
-  }
-}
-```
-
-### **Traefik Configuration**
-
-Add this to `docker-compose.yml`:
-
-```yaml
-labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.gopherdrop.rule=Host(`example.com`)"
-  - "traefik.http.services.gopherdrop.loadbalancer.server.port=8080"
-```
 
 ---
 
