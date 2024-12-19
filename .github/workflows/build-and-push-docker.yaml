@@ -24,13 +24,14 @@ jobs:
       - name: 🏗️ Set Build Variables
         run: |
           echo "GIT_COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
-          echo "GIT_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+          echo "GIT_VERSION=$(git describe --tags --always --long --dirty)" >> $GITHUB_ENV
+
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "IMAGE_TAG=latest" >> $GITHUB_ENV
+            echo "IMAGE_TAGS=latest,${GIT_VERSION}" >> $GITHUB_ENV
           elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "IMAGE_TAG=rc-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+            echo "IMAGE_TAGS=rc-${GIT_VERSION}" >> $GITHUB_ENV
           else
-            echo "IMAGE_TAG=unknown" >> $GITHUB_ENV
+            echo "IMAGE_TAGS=unknown" >> $GITHUB_ENV
           fi
 
       - name: 🛠️ Set up Docker Buildx
@@ -49,7 +50,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/kek-sec/gopherdrop:${{ env.IMAGE_TAG }}
+          tags: |
+            ghcr.io/kek-sec/gopherdrop:${{ env.IMAGE_TAGS }}
           annotations: |
             org.opencontainers.image.description=GopherDrop, a secure one-time secret sharing service
           build-args: |
