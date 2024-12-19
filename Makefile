@@ -6,7 +6,7 @@ build:
 
 # Build in debug mode
 build-debug:
-	docker-compose build --build-arg DEBUG=true
+	docker-compose build --build-arg DEBUG=true --build-arg GIN_MODE=debug
 
 up:
 	docker-compose up -d
@@ -35,6 +35,3 @@ ui-build:
 
 ui-up:
 	cd ui && npm run dev
-
-ui-down:
-	docker-compose stop ui
