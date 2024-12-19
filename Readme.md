@@ -1,6 +1,11 @@
 # 🛠️ **GopherDrop** – Secure One-Time Secret Sharing 🏁
 
 ![Docker Image Version](https://img.shields.io/docker/v/petrakisg/gopherdrop?sort=semver&label=Docker%20Image%20Version&logo=docker)
+![Docker Pulls](https://img.shields.io/docker/pulls/petrakisg/gopherdrop)
+![GitHub branch check runs](https://img.shields.io/github/check-runs/kek-Sec/GopherDrop/main)
+![Coveralls](https://img.shields.io/coverallsCoverage/github/kek-Sec/GopherDrop)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/kek-Sec/GopherDrop)
+
 
 
 ### Demo: [https://gopherdrop.yup.gr](http://gopherdrop.yup.gr)
