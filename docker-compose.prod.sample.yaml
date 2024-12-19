@@ -17,11 +17,7 @@ services:
       - gophernet
 
   app:
-    build: 
-      context: GopherDrop
-      dockerfile: Dockerfile
-      args:
-        - VITE_API_URL=/api
+    image: ghcr.io/kek-sec/gopherdrop:latest
     container_name: gopherdrop_app
     environment:
       DB_HOST: db
