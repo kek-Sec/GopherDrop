@@ -1,6 +1,6 @@
 # 🛠️ **GopherDrop** – Secure One-Time Secret Sharing 🏁
 
-### Demo: [https://gopherdrop.yup.gr](timmy.yup.gr:8081)
+### Demo: [timmy.yup.gr:8081](timmy.yup.gr:8081)
 
 
 GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-time secrets and files, inspired by Bitwarden's Send feature. Built with **Go**, **Vue.js**, and **Vuetify**, GopherDrop is designed for simplicity, security, and ease of deployment.
