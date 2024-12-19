@@ -23,7 +23,7 @@ WORKDIR /app
 COPY ui/package.json ui/package-lock.json ./
 RUN npm install --legacy-peer-deps
 
-ARG VITE_API_URL
+ARG VITE_API_URL = "/api"
 ENV VITE_API_URL=${VITE_API_URL}
 
 COPY ui ./

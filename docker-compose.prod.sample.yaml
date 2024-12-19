@@ -14,10 +14,14 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - goepher_net
+      - gophernet
 
   app:
-    image: ghcr.io/kek-sec/gopherdrop:backend-latest
+    build: 
+      context: GopherDrop
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=/api
     container_name: gopherdrop_app
     environment:
       DB_HOST: db
@@ -29,30 +33,14 @@ services:
       LISTEN_ADDR: :8080
       STORAGE_PATH: /app/storage
       MAX_FILE_SIZE: 10485760
-    volumes:
-      - ./app_storage:/app/storage
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./app_storage:/app/storage
     networks:
-      - goepher_net
-    ports:
-      - "8080:8080"
-
-  ui:
-    build:
-      context: ./ui
-      dockerfile: Dockerfile
-      args:
-        VITE_API_URL: "http://app:8080"
-    container_name: gopherdrop_ui
-    depends_on:
-      - app
-    networks:
-      - goepher_net
-    ports:
-      - "8081:80"
+      - gophernet
 
 networks:
-  goepher_net:
+  gophernet:
     external: true

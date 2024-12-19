@@ -158,7 +158,7 @@ async function handleSubmit() {
 }
 
 function copyLink() {
-  const link = `${baseUrl}/view/${resultHash.value}`
+  const link = `${window.location.origin}/view/${resultHash.value}`
   navigator.clipboard.writeText(link)
   snackbar.value = true
 }
