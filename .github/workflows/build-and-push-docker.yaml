@@ -28,6 +28,8 @@ jobs:
       - name: 📁 Get version
         run: |
           echo "VERSION=$(cat version.yaml | shyaml get-value version)" >> $GITHUB_ENV
+          #print the version
+          echo $VERSION
 
       - name: 🏗️ Set Build tags
         run: |
