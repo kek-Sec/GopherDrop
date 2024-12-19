@@ -69,30 +69,36 @@ const secretLoaded = ref(false)
 const snackbar = ref(false)
 
 async function loadSecret() {
-  errorMessage.value = ''
-  notFound.value = false
-  secretContent.value = ''
-  fileBlob.value = null
+  errorMessage.value = '';
+  notFound.value = false;
+  secretContent.value = '';
+  fileBlob.value = null;
 
   try {
-    const result = await getSend(hash, password.value)
+    const result = await getSend(hash, password.value);
+
     if (result.notFound) {
-      notFound.value = true
-      return
+      console.log('Secret not found.');
+      notFound.value = true;
+      return;
     }
 
     if (result.file) {
-      fileBlob.value = result.file
-      filename.value = result.filename
+      console.log('File secret loaded.');
+      fileBlob.value = result.file;
+      filename.value = result.filename;
     } else {
-      secretContent.value = result.text
+      console.log('Text secret loaded:', result.text);
+      secretContent.value = result.text;
     }
 
-    secretLoaded.value = true
+    secretLoaded.value = true;
   } catch (err) {
-    errorMessage.value = 'Failed to load secret. Incorrect password or secret has expired.'
+    console.error('Error in loadSecret:', err);
+    errorMessage.value = 'Failed to load secret. Incorrect password or secret has expired.';
   }
 }
+
 
 function copyContent() {
   navigator.clipboard.writeText(secretContent.value)
