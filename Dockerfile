@@ -9,24 +9,28 @@ ARG DEBUG=false
 ARG GIT_COMMIT_SHA
 ARG GIT_VERSION
 
-# Set build tags based on the DEBUG flag
+# Set build tags based on the DEBUG flag and include versioning information
 RUN if [ "$DEBUG" = "true" ]; then \
-      go mod download && go build -o server -tags debug ./cmd/server/main.go; \
+      go mod download && go build -o server -tags debug -ldflags="-X main.version=${GIT_VERSION}-${GIT_COMMIT_SHA}" ./cmd/server/main.go; \
     else \
-      go mod download && go build -o server ./cmd/server/main.go; \
+      go mod download && go build -o server -ldflags="-X main.version=${GIT_VERSION}-${GIT_COMMIT_SHA}" ./cmd/server/main.go; \
     fi
 
 # Stage 2: Build the Vue.js Frontend
 FROM node:18-alpine AS frontend-builder
 
 WORKDIR /app
-COPY ui/package.json ui/package-lock.json ./
+COPY ui/package.json ui/package-lock.json ./ 
 RUN npm install --legacy-peer-deps
 
+# Add build argument for the API URL and versioning
 ARG VITE_API_URL="/api"
+ARG GIT_VERSION
+ARG GIT_COMMIT_SHA
 ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_APP_VERSION=${GIT_VERSION}-${GIT_COMMIT_SHA}
 
-COPY ui ./
+COPY ui ./ 
 RUN npm run build
 
 # Stage 3: Combine Backend and Frontend into a Single Image
