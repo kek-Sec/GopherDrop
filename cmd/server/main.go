@@ -11,8 +11,11 @@ import (
 	"github.com/kek-Sec/gopherdrop/internal/routes"
 )
 
+var version = "dev"
+
 // main initializes configuration, database, and the HTTP server.
 func main() {
+	log.Printf("Starting GopherDrop: %s", version)
 	cfg := config.LoadConfig()
 	db := database.InitDB(cfg)
 	db.AutoMigrate(&models.Send{})
