@@ -5,8 +5,8 @@ WORKDIR /app
 COPY . .
 
 # Generate Go version tag based on the current date in ddMMyyyy format
-RUN export GO_VERSION_TAG=$(date +"%d%m%Y") && \
-    echo "Using Go version tag: $GO_VERSION_TAG"
+ARG GO_VERSION_TAG=$(date +"%d%m%Y")
+ENV GO_VERSION_TAG=${GO_VERSION_TAG}
 
 # Add build arguments for debug mode and versioning
 ARG DEBUG=false
