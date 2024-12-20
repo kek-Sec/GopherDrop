@@ -27,12 +27,20 @@
             required
           ></v-file-input>
 
-          <v-text-field
-            label="Password (optional)"
-            v-model="password"
-            type="password"
-          ></v-text-field>
-
+                  <v-text-field
+          label="Password (optional)"
+          v-model="password"
+          :type="showPassword ? 'text' : 'password'"
+        >
+          <template v-slot:append-inner>
+            <v-btn icon @click="togglePasswordVisibility" size="small">
+              <v-icon>{{ showPassword ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
+            </v-btn>
+            <v-btn icon @click="generatePassword" size="small" style="margin-left: 4px">
+              <v-icon>mdi-refresh</v-icon>
+            </v-btn>
+          </template>
+        </v-text-field>
           <v-select
             label="Expiration"
             v-model="expires"
@@ -83,6 +91,7 @@ const type = ref('text')
 const textSecret = ref('')
 const fileBlob = ref(null)
 const password = ref('')
+const showPassword = ref(false)
 const oneTime = ref(false)
 const expires = ref('24h')
 const errorMessage = ref('')
@@ -161,6 +170,21 @@ function copyLink() {
   const link = `${window.location.origin}/view/${resultHash.value}`
   navigator.clipboard.writeText(link)
   snackbar.value = true
+}
+
+function generatePassword() {
+  const length = 12
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+'
+  let generatedPassword = ''
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length)
+    generatedPassword += charset[randomIndex]
+  }
+  password.value = generatedPassword
+}
+
+function togglePasswordVisibility() {
+  showPassword.value = !showPassword.value
 }
 </script>
 
