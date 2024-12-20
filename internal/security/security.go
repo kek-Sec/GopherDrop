@@ -6,6 +6,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"io"
 )
 
@@ -23,14 +24,19 @@ func EncryptData(data []byte, key []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	ciphertext := make([]byte, aes.BlockSize+len(data))
-	iv := ciphertext[:aes.BlockSize]
-	_, err = io.ReadFull(rand.Reader, iv)
-	if err != nil {
+
+	// Generate a random IV
+	iv := make([]byte, aes.BlockSize)
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		return "", err
 	}
+
+	ciphertext := make([]byte, aes.BlockSize+len(data))
+	copy(ciphertext[:aes.BlockSize], iv)
+
 	stream := cipher.NewCFBEncrypter(block, iv)
 	stream.XORKeyStream(ciphertext[aes.BlockSize:], data)
+
 	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
@@ -40,16 +46,21 @@ func DecryptData(enc string, key []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
+
 	if len(data) < aes.BlockSize {
-		return nil, err
+		return nil, errors.New("ciphertext too short")
 	}
+
 	iv := data[:aes.BlockSize]
 	data = data[aes.BlockSize:]
+
 	stream := cipher.NewCFBDecrypter(block, iv)
 	stream.XORKeyStream(data, data)
+
 	return data, nil
 }
