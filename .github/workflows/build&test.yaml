@@ -96,7 +96,7 @@ jobs:
         run: go mod tidy
 
       - name: 🔍 Run Golang Security Scanner
-        uses: securego/gosec@v2
+        uses: securego/gosec@v2.21.4
         with:
           args: ./...
 
