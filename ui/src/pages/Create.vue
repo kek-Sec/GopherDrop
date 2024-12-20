@@ -190,8 +190,10 @@ function generatePassword() {
   const length = 12
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+'
   let generatedPassword = ''
+  const randomValues = new Uint32Array(length)
+  window.crypto.getRandomValues(randomValues)
   for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * charset.length)
+    const randomIndex = randomValues[i] % charset.length
     generatedPassword += charset[randomIndex]
   }
   password.value = generatedPassword
