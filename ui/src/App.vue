@@ -5,7 +5,9 @@
         <!-- Header -->
         <v-toolbar color="primary" dark flat>
           <v-toolbar-title>
-            <img src="./assets/Images/logo.png" alt="Logo" height="50" />
+            <router-link to="/" class="logo-link">
+              <img src="./assets/Images/logo.png" alt="Logo" height="50" />
+            </router-link>
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn to="/" text>
@@ -65,4 +67,10 @@
 .v-footer a:hover {
   text-decoration: underline;
 }
+
+.logo-link {
+  display: inline-block;
+  text-decoration: none;
+}
+
 </style>
