@@ -98,7 +98,12 @@ jobs:
       - name: 🔍 Run Golang Security Scanner
         uses: securego/gosec@v2.21.4
         with:
-          args: ./...
+          args: '-no-fail -fmt sarif -out results.sarif ./...'
+      
+      - name: 📝 Upload SARIF Results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: results.sarif
 
       - name: 🌐 Set Up Node.js
         uses: actions/setup-node@v4
