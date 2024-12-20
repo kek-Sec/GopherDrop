@@ -1,3 +1,17 @@
+### [1.0.5]
+UI Enhancements:
+
+* `ui/index.html`: Added a link to the Animate.css library for animation effects.
+* [`ui/src/App.vue`: Integrated animation classes into various elements, including the header logo, buttons, and alerts. 
+
+Password Management Enhancements:
+* `ui/src/pages/Create.vue`: Added functionality to toggle password visibility and generate random passwords, along with corresponding tooltips and animations.
+404 Error Page Improvements:
+* `ui/src/pages/Error404.vue`: Redesigned the 404 error page with a more user-friendly card layout, including an icon, message, and a button to navigate back home.
+
+Other Enhancements:
+* `ui/src/pages/Create.vue`, `ui/src/pages/View.vue`: Applied animation classes to various elements to provide a more dynamic user experience. 
+
 ### [1.0.4]
 - Reworked CD pipelines to follow semver tagging
 - added version.yaml
