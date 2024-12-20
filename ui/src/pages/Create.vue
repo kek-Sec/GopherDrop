@@ -1,6 +1,6 @@
 <template>
   <v-container class="d-flex justify-center align-center fill-height">
-    <v-card class="pa-4" max-width="600" outlined>
+    <v-card class="pa-4 animate__animated animate__fadeIn" max-width="600" outlined>
       <v-card-title class="text-h5 text-center">Create a New Secret 🔑</v-card-title>
       <v-card-text>
         <v-form @submit.prevent="handleSubmit">
@@ -66,12 +66,12 @@
 
           <v-btn type="submit" color="primary" class="mt-4" block>Create</v-btn>
 
-          <v-alert v-if="errorMessage" type="error" class="mt-4">
+          <v-alert v-if="errorMessage" type="error" class="mt-4 animate__animated animate__bounceIn">
             {{ errorMessage }}
           </v-alert>
         </v-form>
 
-        <v-alert v-if="resultHash" type="success" class="mt-4">
+        <v-alert v-if="resultHash" type="success" class="mt-4 animate__animated animate__fadeIn">
           Secret Created! Share this link:<br />
           <div class="d-flex align-center mt-2">
             <v-chip class="mr-2">{{ baseUrl }}/view/{{ resultHash }}</v-chip>

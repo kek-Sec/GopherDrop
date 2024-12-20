@@ -5,12 +5,12 @@
         <!-- Header -->
         <v-toolbar color="primary" dark flat>
           <v-toolbar-title>
-            <router-link to="/" class="logo-link">
+            <router-link to="/" class="logo-link animate__animated animate__pulse">
               <img src="./assets/Images/logo.png" alt="Logo" height="50" />
             </router-link>
           </v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn to="/" text>
+          <v-btn to="/" text class="animate__animated animate__fadeIn">
             <v-icon left>mdi-plus</v-icon> Create
           </v-btn>
         </v-toolbar>
