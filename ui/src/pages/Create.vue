@@ -57,8 +57,8 @@
           Secret Created! Share this link:<br />
           <div class="d-flex align-center mt-2">
             <v-chip class="mr-2">{{ baseUrl }}/view/{{ resultHash }}</v-chip>
-            <v-btn icon @click="copyLink" color="light-green">
-              <v-icon>mdi-content-copy</v-icon>
+            <v-btn icon @click="copyLink" color="white">
+              <v-icon color="black">mdi-content-copy</v-icon>
             </v-btn>
           </div>
           <v-snackbar v-model="snackbar" timeout="2000">
