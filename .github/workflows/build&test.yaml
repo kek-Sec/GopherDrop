@@ -1,4 +1,4 @@
-name: 🛠️ Build & Test
+name: 🛠️ Build, Test & Scan
 
 on:
   pull_request:
@@ -78,3 +78,44 @@ jobs:
         with:
           path-to-profile: coverage.out
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  scan-vulnerabilities:
+    name: 🔍 Scan for Vulnerabilities
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐹 Set Up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: 📦 Install Go Dependencies
+        run: go mod tidy
+
+      - name: 🔍 Run Golang Security Scanner
+        uses: securego/gosec@v2.21.4
+        with:
+          args: '-no-fail -fmt sarif -out results.sarif ./...'
+      
+      - name: 📝 Upload SARIF Results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+
+      - name: 🌐 Set Up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install Vue Dependencies
+        run: |
+          cd ui
+          npm install
+
+      - name: 🔍 Run NPM Audit
+        run: |
+          cd ui
+          npm audit --audit-level=high || true
