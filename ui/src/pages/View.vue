@@ -1,6 +1,6 @@
 <template>
   <v-container class="d-flex justify-center align-center fill-height">
-    <v-card class="pa-4" max-width="600" outlined>
+    <v-card class="pa-4 animate__animated animate__fadeIn" max-width="600" outlined>
       <v-card-title class="text-h5 text-center">View Secret</v-card-title>
       <v-card-text>
         <v-alert v-if="errorMessage" type="error" class="mb-4">
@@ -19,9 +19,10 @@
             type="password"
             prepend-icon="mdi-lock"
             required
+            class="animate__animated animate__fadeIn"
           ></v-text-field>
 
-          <v-btn type="submit" color="primary" block>Load Secret</v-btn>
+          <v-btn type="submit" color="primary" class="animate__animated animate__fadeIn" block>Load Secret</v-btn>
         </v-form>
 
         <div v-if="secretLoaded">
@@ -32,7 +33,7 @@
 
           <!-- Download button for file secret -->
           <div v-if="fileBlob">
-            <v-btn color="primary" @click="downloadFile" block>
+            <v-btn color="primary" @click="downloadFile" block class="animate__animated animate__fadeIn">
               <v-icon left>mdi-download</v-icon> Download File
             </v-btn>
           </div>
@@ -43,7 +44,7 @@
           </v-btn>
 
           <v-snackbar v-model="snackbar" timeout="2000">
-            Link copied to clipboard!
+            Text copied to clipboard!
           </v-snackbar>
         </div>
       </v-card-text>

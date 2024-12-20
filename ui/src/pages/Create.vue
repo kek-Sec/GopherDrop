@@ -1,6 +1,6 @@
 <template>
   <v-container class="d-flex justify-center align-center fill-height">
-    <v-card class="pa-4" max-width="600" outlined>
+    <v-card class="pa-4 animate__animated animate__fadeIn" max-width="600" outlined>
       <v-card-title class="text-h5 text-center">Create a New Secret 🔑</v-card-title>
       <v-card-text>
         <v-form @submit.prevent="handleSubmit">
@@ -30,8 +30,26 @@
           <v-text-field
             label="Password (optional)"
             v-model="password"
-            type="password"
-          ></v-text-field>
+            :type="showPassword ? 'text' : 'password'"
+          >
+            <template v-slot:append-inner>
+              <v-tooltip text="Toggle Password Visibility">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn icon v-bind="attrs" v-on="on" @click="togglePasswordVisibility" size="small">
+                    <v-icon>{{ showPassword ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+
+              <v-tooltip text="Generate Random Password">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn icon color="primary" v-bind="attrs" v-on="on" @click="generatePassword" size="small" style="margin-left: 4px">
+                    <v-icon>mdi-refresh</v-icon>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+            </template>
+          </v-text-field>
 
           <v-select
             label="Expiration"
@@ -48,18 +66,22 @@
 
           <v-btn type="submit" color="primary" class="mt-4" block>Create</v-btn>
 
-          <v-alert v-if="errorMessage" type="error" class="mt-4">
+          <v-alert v-if="errorMessage" type="error" class="mt-4 animate__animated animate__bounceIn">
             {{ errorMessage }}
           </v-alert>
         </v-form>
 
-        <v-alert v-if="resultHash" type="success" class="mt-4">
+        <v-alert v-if="resultHash" type="success" class="mt-4 animate__animated animate__fadeIn">
           Secret Created! Share this link:<br />
           <div class="d-flex align-center mt-2">
             <v-chip class="mr-2">{{ baseUrl }}/view/{{ resultHash }}</v-chip>
-            <v-btn icon @click="copyLink" color="light-green">
-              <v-icon>mdi-content-copy</v-icon>
-            </v-btn>
+            <v-tooltip text="Copy Link to Clipboard">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon v-bind="attrs" v-on="on" @click="copyLink" color="white">
+                  <v-icon color="black">mdi-content-copy</v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
           </div>
           <v-snackbar v-model="snackbar" timeout="2000">
             Link copied to clipboard!
@@ -83,6 +105,7 @@ const type = ref('text')
 const textSecret = ref('')
 const fileBlob = ref(null)
 const password = ref('')
+const showPassword = ref(false)
 const oneTime = ref(false)
 const expires = ref('24h')
 const errorMessage = ref('')
@@ -161,6 +184,23 @@ function copyLink() {
   const link = `${window.location.origin}/view/${resultHash.value}`
   navigator.clipboard.writeText(link)
   snackbar.value = true
+}
+
+function generatePassword() {
+  const length = 12
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+'
+  let generatedPassword = ''
+  const randomValues = new Uint32Array(length)
+  window.crypto.getRandomValues(randomValues)
+  for (let i = 0; i < length; i++) {
+    const randomIndex = randomValues[i] % charset.length
+    generatedPassword += charset[randomIndex]
+  }
+  password.value = generatedPassword
+}
+
+function togglePasswordVisibility() {
+  showPassword.value = !showPassword.value
 }
 </script>
 
