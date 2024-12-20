@@ -31,6 +31,9 @@ func EncryptData(data []byte, key []byte) (string, error) {
 		return "", err
 	}
 
+	if len(data) > (1<<31 - 1 - aes.BlockSize) {
+		return "", errors.New("data too large to encrypt")
+	}
 	ciphertext := make([]byte, aes.BlockSize+len(data))
 	copy(ciphertext[:aes.BlockSize], iv)
 
