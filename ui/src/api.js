@@ -13,11 +13,11 @@ export async function createSend(formData) {
   if (!res.ok) {
     if (res.status === 413) {
       throw new Error('File too large')
-    }
-    else if (res.status === 422) {
+    } else if (res.status === 422) {
       throw new Error('Invalid form data')
-    }
-    else {
+    } else if (res.status === 429) {
+      throw new Error('Too many requests – please try again later')
+    } else {
       throw new Error('Failed to create send')
     }
   }
