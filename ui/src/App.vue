@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <v-main>
-      <v-container fluid class="pa-0">
+    <v-main class="d-flex flex-column">
+      <v-container fluid class="pa-0 flex-grow-1">
         <!-- Header -->
         <v-toolbar color="primary" dark flat>
           <v-toolbar-title>
@@ -19,22 +19,22 @@
         <v-container class="mt-4">
           <router-view />
         </v-container>
-
-        <!-- Footer -->
-        <v-footer color="primary" dark class="justify-center mt-4">
-          <span>
-            © {{ new Date().getFullYear() }} GopherDrop | 
-            <a
-              href="https://github.com/kek-Sec/gopherdrop"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-white"
-            >
-              GitHub Repository
-            </a>
-          </span>
-        </v-footer>
       </v-container>
+
+      <!-- Footer -->
+      <v-footer color="primary" dark class="justify-center">
+        <span>
+          © {{ new Date().getFullYear() }} GopherDrop | 
+          <a
+            href="https://github.com/kek-Sec/gopherdrop"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-white"
+          >
+            GitHub Repository
+          </a>
+        </span>
+      </v-footer>
     </v-main>
   </v-app>
 </template>
@@ -73,4 +73,9 @@
   text-decoration: none;
 }
 
+.v-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 </style>

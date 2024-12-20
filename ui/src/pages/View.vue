@@ -43,7 +43,7 @@
           </v-btn>
 
           <v-snackbar v-model="snackbar" timeout="2000">
-            Link copied to clipboard!
+            Text copied to clipboard!
           </v-snackbar>
         </div>
       </v-card-text>
