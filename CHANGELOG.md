@@ -1,3 +1,7 @@
+### [1.0.6]
+* `cmd/server/main.go`: Added rate limiting to POST requests.
+* `ui/src/pages/Create.vue`: Added error handling for 429 responses.
+
 ### [1.0.5]
 UI Enhancements:
 
