@@ -97,3 +97,32 @@ func TestCORSHeaders(t *testing.T) {
 	assert.Contains(t, w.Header().Get("Access-Control-Allow-Headers"), "Content-Type")
 }
 
+func TestRateLimiter(t *testing.T) {
+	router := setupTestRouter()
+
+	// Define a payload for the POST request
+	payload := "type=text&data=test"
+
+	// Simulate 5 requests (the burst capacity) in quick succession with slight delays
+	for i := 0; i < 5; i++ {
+		req := httptest.NewRequest("POST", "/send", strings.NewReader(payload))
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code, "Request %d should succeed within the burst capacity", i+1)
+
+		// Introduce a small delay (e.g., 10 milliseconds) between requests
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	// The 6th request should be rate limited and return a 429 status
+	req := httptest.NewRequest("POST", "/send", strings.NewReader(payload))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusTooManyRequests, w.Code, "6th request should be rate limited")
+}
