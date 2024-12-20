@@ -27,20 +27,30 @@
             required
           ></v-file-input>
 
-                  <v-text-field
-          label="Password (optional)"
-          v-model="password"
-          :type="showPassword ? 'text' : 'password'"
-        >
-          <template v-slot:append-inner>
-            <v-btn icon @click="togglePasswordVisibility" size="small">
-              <v-icon>{{ showPassword ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
-            </v-btn>
-            <v-btn icon @click="generatePassword" size="small" style="margin-left: 4px">
-              <v-icon>mdi-refresh</v-icon>
-            </v-btn>
-          </template>
-        </v-text-field>
+          <v-text-field
+            label="Password (optional)"
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+          >
+            <template v-slot:append-inner>
+              <v-tooltip text="Toggle Password Visibility">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn icon v-bind="attrs" v-on="on" @click="togglePasswordVisibility" size="small">
+                    <v-icon>{{ showPassword ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+
+              <v-tooltip text="Generate Random Password">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn icon color="primary" v-bind="attrs" v-on="on" @click="generatePassword" size="small" style="margin-left: 4px">
+                    <v-icon>mdi-refresh</v-icon>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+            </template>
+          </v-text-field>
+
           <v-select
             label="Expiration"
             v-model="expires"
@@ -65,9 +75,13 @@
           Secret Created! Share this link:<br />
           <div class="d-flex align-center mt-2">
             <v-chip class="mr-2">{{ baseUrl }}/view/{{ resultHash }}</v-chip>
-            <v-btn icon @click="copyLink" color="white">
-              <v-icon color="black">mdi-content-copy</v-icon>
-            </v-btn>
+            <v-tooltip text="Copy Link to Clipboard">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon v-bind="attrs" v-on="on" @click="copyLink" color="white">
+                  <v-icon color="black">mdi-content-copy</v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
           </div>
           <v-snackbar v-model="snackbar" timeout="2000">
             Link copied to clipboard!
