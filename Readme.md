@@ -18,27 +18,27 @@ GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-
 
 ## 📋 **Table of Contents**
 
-1. [Features](#-features)  
-2. [Installation](#-installation)  
-3. [Build and Run](#-build-and-run)  
-4. [Configuration](#-configuration)  
-5. [Endpoints](#-endpoints)  
-6. [Docker Deployment](#-docker-deployment)  
-7. [Contributing](#-contributing)  
-8. [License](#-license)  
-9. [Community and Support](#-community-and-support)  
+1. [Features](#-features)
+2. [Installation](#-installation)
+3. [Build and Run](#-build-and-run)
+4. [Configuration](#-configuration)
+5. [Endpoints](#-endpoints)
+6. [Docker Deployment](#-docker-deployment)
+7. [Contributing](#-contributing)
+8. [License](#-license)
+9. [Community and Support](#-community-and-support)
 
 ---
 
 ## 🌟 **Features**
 
-- **Send Text or Files**: Share sensitive information securely.  
-- **Password Protection**: Encrypt your secrets with a password.  
-- **One-Time Retrieval**: Automatically delete secrets after a single access.  
-- **Expiration Settings**: Define how long a secret remains available.  
-- **Responsive UI**: Built with Vue.js and Vuetify for a modern user experience.  
-- **Dockerized Deployment**: Simple setup with Docker and Docker Compose.  
-- **Production and Debug Modes**: Easily switch between production and debug builds.  
+- **Send Text or Files**: Share sensitive information securely.
+- **Password Protection**: Encrypt your secrets with a password.
+- **One-Time Retrieval**: Automatically delete secrets after a single access.
+- **Expiration Settings**: Define how long a secret remains available.
+- **Responsive UI**: Built with Vue.js and Vuetify for a modern user experience.
+- **Dockerized Deployment**: Simple setup with Docker and Docker Compose.
+- **Production and Debug Modes**: Easily switch between production and debug builds.
 
 
 ---
@@ -55,8 +55,8 @@ GopherDrop is a secure, self-hostable REST API and UI for sharing encrypted one-
 
 ### **Prerequisites**
 
-- **Docker**: [Install Docker](https://docs.docker.com/get-docker/)  
-- **Docker Compose**: [Install Docker Compose](https://docs.docker.com/compose/install/)  
+- **Docker**: [Install Docker](https://docs.docker.com/get-docker/)
+- **Docker Compose**: [Install Docker Compose](https://docs.docker.com/compose/install/)
 
 ### **Clone the Repository**
 
@@ -129,6 +129,17 @@ MAX_FILE_SIZE=10485760
 | `STORAGE_PATH`   | Path for storing uploaded files | `/app/storage`                      |
 | `MAX_FILE_SIZE`  | Maximum file size in bytes      | `10485760` (10 MB)                  |
 
+### **Build Arguments**
+
+| Argument             | Description                          | Default Value                                |
+|----------------------|--------------------------------------|----------------------------------------------|
+| `VITE_API_URL`       | API endpoint URL                     | `/api`                                       |
+| `VITE_APP_TITLE`     | Custom application title             | `GopherDrop`                                 |
+| `VITE_APP_DESCRIPTION` | Custom application description     | `Secure one-time secret and file sharing`    |
+| `DEBUG`              | Enable debug mode                    | `false`                                      |
+| `GIN_MODE`           | Gin framework mode                   | `release`                                    |
+| `VERSION`            | Application version                  | `-`                                          |
+
 ---
 
 ## 🖥️ **Endpoints**
@@ -146,10 +157,10 @@ MAX_FILE_SIZE=10485760
 
 ## 🤝 **Contributing**
 
-1. Fork the repository.  
-2. Create a new branch: `git checkout -b my-feature-branch`  
-3. Make your changes and add tests.  
-4. Submit a pull request.  
+1. Fork the repository.
+2. Create a new branch: `git checkout -b my-feature-branch`
+3. Make your changes and add tests.
+4. Submit a pull request.
 
 ---
 
@@ -161,5 +172,5 @@ GopherDrop is licensed under the [MIT License](LICENSE).
 
 ## 💬 **Community and Support**
 
-- **Issues**: [GitHub Issues](https://github.com/kek-Sec/gopherdrop/issues)  
-- **Discussions**: [GitHub Discussions](https://github.com/kek-Sec/gopherdrop/discussions)  
+- **Issues**: [GitHub Issues](https://github.com/kek-Sec/gopherdrop/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/kek-Sec/gopherdrop/discussions)
