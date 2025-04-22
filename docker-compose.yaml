@@ -17,11 +17,13 @@ services:
       - gopherdrop
 
   app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
       args:
         - VITE_API_URL=/api
+        - VITE_APP_TITLE=TEST
+        - VITE_APP_DESCRIPTION=TEST_DESCR
     container_name: gopherdrop_app
     environment:
       DB_HOST: db
