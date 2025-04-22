@@ -19,17 +19,22 @@ RUN if [ "$DEBUG" = "true" ]; then \
     fi
 
 # Stage 2: Build the Vue.js Frontend
-FROM node:18-alpine AS frontend-builder
+FROM node:23-alpine AS frontend-builder
 
 WORKDIR /app
-COPY ui/package.json ui/package-lock.json ./ 
+COPY ui/package.json ui/package-lock.json ./
 RUN npm install --legacy-peer-deps
 
-# Add build argument for the API URL and versioning
+# Add build arguments for customization
 ARG VITE_API_URL="/api"
-ENV VITE_API_URL=${VITE_API_URL}
+ARG VITE_APP_TITLE="GopherDrop"
+ARG VITE_APP_DESCRIPTION="Secure one-time secret and file sharing"
 
-COPY ui ./ 
+ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_APP_TITLE=${VITE_APP_TITLE}
+ENV VITE_APP_DESCRIPTION=${VITE_APP_DESCRIPTION}
+
+COPY ui ./
 RUN npm run build
 
 # Stage 3: Combine Backend and Frontend into a Single Image

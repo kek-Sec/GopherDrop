@@ -2,29 +2,29 @@
 
 # Default build (production)
 build:
-	docker-compose build
+	docker compose build
 
 # Build in debug mode
 build-debug:
-	docker-compose build --build-arg DEBUG=true --build-arg GIN_MODE=debug
+	docker compose build --build-arg DEBUG=true --build-arg GIN_MODE=debug
 
 up:
-	docker-compose up -d
+	docker compose up -d
 
 down:
-	docker-compose down
+	docker compose down
 
 logs:
-	docker-compose logs -f app
+	docker compose logs -f app
 
 dbshell:
-	docker-compose exec db psql -U $(DB_USER) -d $(DB_NAME)
+	docker compose exec db psql -U $(DB_USER) -d $(DB_NAME)
 
 start-db:
-	docker-compose up -d db
+	docker compose up -d db
 
 stop-db:
-	docker-compose stop db
+	docker compose stop db
 
 test:
 	go test ./... -v
