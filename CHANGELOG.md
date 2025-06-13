@@ -1,6 +1,23 @@
 # Changelog
 
-## [1.0.7] - 2025-04-22
+## [1.0.8]
+### UI Enhancements
+- **Redesigned Header and Footer**: Modernized header/footer with theme toggle and improved visual consistency.
+- **Improved 404 Page**: Updated design for better responsiveness and refined typography.
+
+### Theme and Styling Updates
+- **Custom Themes**: Introduced custom light/dark themes and theme switching functionality.
+- **Global Styling Updates**: Updated font to "Inter" and added a gradient background.
+
+### Component Enhancements
+- **Reusable Password Input**: Created a component for password handling, including visibility and generation.
+- **Secret Display Component**: Added a component for secret copying and file downloading with alerts.
+
+### Code Cleanup and Refactoring
+- **Removed Unused API Code**: Deleted obsolete `api.js` to simplify codebase.
+- **Form Reset Logic**: Refactored `Create.vue` to use a centralized store for form reset.
+
+## [1.0.7]
 ### Added
 - Customizable application title and description through environment variables
 - New build arguments in Dockerfile: VITE_APP_TITLE and VITE_APP_DESCRIPTION
