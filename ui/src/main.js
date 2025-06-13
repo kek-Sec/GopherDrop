@@ -4,7 +4,7 @@
  */
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router' // This now imports from the /router directory
+import router from './router'
 
 // Import Vuetify and styles
 import 'vuetify/styles'
