@@ -99,7 +99,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { createSend } from '../api.js'
+import { createSend } from '../services/api.js'
 
 const type = ref('text')
 const textSecret = ref('')

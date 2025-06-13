@@ -55,7 +55,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getSend, checkPasswordProtection } from '../api.js'
+import { getSend, checkPasswordProtection } from '../services/api.js'
 
 const route = useRoute()
 const hash = route.params.hash
