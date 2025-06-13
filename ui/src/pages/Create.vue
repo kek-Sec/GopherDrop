@@ -100,8 +100,12 @@ const expirationOptions = [
   { title: '1 Week', value: '168h' }
 ];
 
-function handleFile(files) {
-  fileBlob.value = files[0] || null;
+function handleFile(fileOrFiles) {
+  if (Array.isArray(fileOrFiles)) {
+    fileBlob.value = fileOrFiles[0] || null;
+  } else {
+    fileBlob.value = fileOrFiles || null;
+  }
 }
 
 async function handleSubmit() {
