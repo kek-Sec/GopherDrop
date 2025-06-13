@@ -1,16 +1,16 @@
 <template>
   <div>
-    <v-alert v-if="textContent" type="info" class="mb-4">
+    <v-alert v-if="textContent" type="info" class="mb-4 text-left" variant="tonal">
       {{ textContent }}
     </v-alert>
 
     <div v-if="file">
-      <v-btn color="primary" @click="download" block>
+      <v-btn color="primary" @click="download" block x-large height="50" rounded>
         <v-icon left>mdi-download</v-icon> Download File
       </v-btn>
     </div>
 
-    <v-btn v-if="textContent" color="primary" @click="copy" block class="mt-4">
+    <v-btn v-if="textContent" color="primary" @click="copy" block x-large height="50" rounded class="mt-4">
       <v-icon left>mdi-content-copy</v-icon> Copy Secret
     </v-btn>
 

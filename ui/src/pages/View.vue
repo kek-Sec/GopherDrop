@@ -1,13 +1,13 @@
 <template>
   <v-container class="d-flex justify-center align-center fill-height">
-    <v-card class="pa-4 animate__animated animate__fadeIn" max-width="600" outlined>
-      <v-card-title class="text-h5 text-center">View Secret</v-card-title>
+    <v-card class="pa-4 pa-md-8 animate__animated animate__fadeIn" max-width="600" elevation="6" rounded="lg">
+      <v-card-title class="text-h5 text-md-h4 font-weight-bold text-center mb-4">View Secret 🔒</v-card-title>
       <v-card-text>
-        <v-alert v-if="errorMessage" type="error" class="mb-4">
+        <v-alert v-if="errorMessage" type="error" class="mb-4" variant="tonal">
           {{ errorMessage }}
         </v-alert>
 
-        <v-alert v-if="notFound" type="error" class="mb-4">
+        <v-alert v-if="notFound" type="error" class="mb-4" variant="tonal">
           Secret not found or has expired.
         </v-alert>
 
@@ -17,12 +17,13 @@
             label="Password"
             v-model="password"
             type="password"
-            prepend-icon="mdi-lock"
+            prepend-inner-icon="mdi-lock"
             required
+            variant="outlined"
             class="animate__animated animate__fadeIn"
           ></v-text-field>
 
-          <v-btn type="submit" color="primary" class="animate__animated animate__fadeIn" block>Load Secret</v-btn>
+          <v-btn type="submit" color="primary" class="animate__animated animate__fadeIn mt-4" block x-large height="50" rounded>Load Secret</v-btn>
         </v-form>
 
         <SecretDisplay
@@ -94,7 +95,7 @@ onMounted(async () => {
 
 <style scoped>
 .v-container {
-  min-height: 100vh;
+  min-height: 85vh;
 }
 
 .v-card {

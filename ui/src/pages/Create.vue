@@ -1,7 +1,7 @@
 <template>
   <v-container class="d-flex justify-center align-center fill-height">
-    <v-card class="pa-4 animate__animated animate__fadeIn" max-width="600" outlined>
-      <v-card-title class="text-h5 text-center">Create a New Secret 🔑</v-card-title>
+    <v-card class="pa-4 pa-md-8 animate__animated animate__fadeIn" max-width="600" elevation="6" rounded="lg">
+      <v-card-title class="text-h5 text-md-h4 font-weight-bold text-center mb-4">Create a New Secret 🔑</v-card-title>
       <v-card-text>
         <v-form @submit.prevent="handleSubmit">
           <v-select
@@ -9,6 +9,8 @@
             v-model="type"
             :items="['text', 'file']"
             required
+            variant="outlined"
+            class="mb-2"
           ></v-select>
 
           <v-textarea
@@ -16,6 +18,8 @@
             label="Text Secret"
             v-model="textSecret"
             required
+            variant="outlined"
+            rows="4"
           ></v-textarea>
 
           <v-file-input
@@ -25,43 +29,49 @@
             v-model="files"
             show-size
             required
+            variant="outlined"
           ></v-file-input>
 
-          <PasswordInput v-model="password" />
+          <PasswordInput v-model="password" class="mt-2" />
 
           <v-select
             label="Expiration"
             v-model="expires"
             :items="expirationOptions"
             required
+            variant="outlined"
+            class="mt-2"
           ></v-select>
 
           <v-checkbox
             v-model="oneTime"
             label="One-Time Retrieval"
-            class="mt-4"
+            color="primary"
+            class="mt-2"
           ></v-checkbox>
 
-          <v-btn type="submit" color="primary" class="mt-4" block>Create</v-btn>
+          <v-btn type="submit" color="primary" class="mt-4" block large rounded x-large height="50">Create Secret</v-btn>
 
-          <v-alert v-if="errorMessage" type="error" class="mt-4 animate__animated animate__bounceIn">
+          <v-alert v-if="errorMessage" type="error" class="mt-4 animate__animated animate__bounceIn" variant="tonal">
             {{ errorMessage }}
           </v-alert>
         </v-form>
 
-        <v-alert v-if="resultHash" type="success" class="mt-4 animate__animated animate__fadeIn">
-          Secret Created! Share this link:<br />
-          <div class="d-flex align-center mt-2">
-            <v-chip class="mr-2">{{ baseUrl }}/view/{{ resultHash }}</v-chip>
+        <v-alert v-if="resultHash" type="success" class="mt-6 animate__animated animate__fadeIn" variant="tonal">
+          <div class="text-h6 mb-2">Secret Created!</div>
+          <p>Share this link to view the secret:</p>
+          <div class="d-flex align-center mt-2 pa-2" style="background-color: rgba(var(--v-theme-on-surface), 0.05); border-radius: 8px;">
+            <span class="mr-2 text-truncate">{{ baseUrl }}/view/{{ resultHash }}</span>
+            <v-spacer></v-spacer>
             <v-tooltip text="Copy Link to Clipboard">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn icon v-bind="attrs" v-on="on" @click="copyLink" color="white">
-                  <v-icon color="black">mdi-content-copy</v-icon>
+              <template v-slot:activator="{ props }">
+                <v-btn icon v-bind="props" @click="copyLink">
+                  <v-icon>mdi-content-copy</v-icon>
                 </v-btn>
               </template>
             </v-tooltip>
           </div>
-          <v-snackbar v-model="snackbar" timeout="2000">
+          <v-snackbar v-model="snackbar" timeout="2000" color="success">
             Link copied to clipboard!
           </v-snackbar>
         </v-alert>
@@ -82,8 +92,8 @@ import { formStore } from '../stores/formStore.js'; // Import the store
 
 const type = ref('text');
 const textSecret = ref('');
-const fileBlob = ref(null); // Will hold the single file for upload
-const files = ref([]); // Will be the model for the v-file-input
+const fileBlob = ref(null);
+const files = ref([]);
 const password = ref('');
 const oneTime = ref(false);
 const expires = ref('24h');
@@ -102,7 +112,6 @@ const expirationOptions = [
   { title: '1 Week', value: '168h' }
 ];
 
-// Watch the file input's model and update the fileBlob we use for the API
 watch(files, (newFiles) => {
   if (Array.isArray(newFiles) && newFiles.length > 0) {
     fileBlob.value = newFiles[0];
@@ -111,11 +120,10 @@ watch(files, (newFiles) => {
   }
 });
 
-// The new function to reset all form fields to their default state
 function resetForm() {
   type.value = 'text';
   textSecret.value = '';
-  files.value = []; // This clears the v-file-input
+  files.value = [];
   password.value = '';
   oneTime.value = false;
   expires.value = '24h';
@@ -124,7 +132,6 @@ function resetForm() {
   loading.value = false;
 }
 
-// Watch the counter in the store. When it changes, reset the form.
 watch(() => formStore.resetCounter, () => {
   resetForm();
 });
@@ -180,7 +187,7 @@ function copyLink() {
 
 <style scoped>
 .v-container {
-  min-height: 100vh;
+  min-height: 85vh;
 }
 
 .v-card {
