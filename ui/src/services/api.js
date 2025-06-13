@@ -43,12 +43,18 @@ export async function createSend(formData) {
  * @throws {Error} If the retrieval fails.
  */
 export async function getSend(hash, password = '') {
-  const url = new URL(`${API_URL}/send/${hash}`);
-  if (password) {
-    url.searchParams.set('password', password);
-  }
+  // --- Start of Fix ---
+  // Construct the base URL string.
+  let url = `${API_URL}/send/${hash}`;
 
-  const res = await fetch(url);
+  // Manually append the password as a query parameter if it exists.
+  if (password) {
+    const params = new URLSearchParams({ password });
+    url += `?${params.toString()}`;
+  }
+  // --- End of Fix ---
+
+  const res = await fetch(url); // Use the resilient URL string.
 
   if (res.status === 404) {
     console.log('Secret not found.');
