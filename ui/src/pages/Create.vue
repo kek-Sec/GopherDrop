@@ -22,7 +22,7 @@
             v-if="type === 'file'"
             label="Select File"
             prepend-icon="mdi-upload"
-            @update:modelValue="handleFile"
+            v-model="files"
             show-size
             required
           ></v-file-input>
@@ -75,13 +75,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { createSend } from '../services/api.js';
 import PasswordInput from '../components/PasswordInput.vue';
+import { formStore } from '../stores/formStore.js'; // Import the store
 
 const type = ref('text');
 const textSecret = ref('');
-const fileBlob = ref(null);
+const fileBlob = ref(null); // Will hold the single file for upload
+const files = ref([]); // Will be the model for the v-file-input
 const password = ref('');
 const oneTime = ref(false);
 const expires = ref('24h');
@@ -100,13 +102,32 @@ const expirationOptions = [
   { title: '1 Week', value: '168h' }
 ];
 
-function handleFile(fileOrFiles) {
-  if (Array.isArray(fileOrFiles)) {
-    fileBlob.value = fileOrFiles[0] || null;
+// Watch the file input's model and update the fileBlob we use for the API
+watch(files, (newFiles) => {
+  if (Array.isArray(newFiles) && newFiles.length > 0) {
+    fileBlob.value = newFiles[0];
   } else {
-    fileBlob.value = fileOrFiles || null;
+    fileBlob.value = null;
   }
+});
+
+// The new function to reset all form fields to their default state
+function resetForm() {
+  type.value = 'text';
+  textSecret.value = '';
+  files.value = []; // This clears the v-file-input
+  password.value = '';
+  oneTime.value = false;
+  expires.value = '24h';
+  errorMessage.value = '';
+  resultHash.value = '';
+  loading.value = false;
 }
+
+// Watch the counter in the store. When it changes, reset the form.
+watch(() => formStore.resetCounter, () => {
+  resetForm();
+});
 
 async function handleSubmit() {
   errorMessage.value = '';
