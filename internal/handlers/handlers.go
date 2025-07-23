@@ -3,7 +3,7 @@ package handlers
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -22,10 +22,19 @@ import (
 // It accepts form data for type (text/file), optional password, one-time use, and expiration.
 func CreateSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		stype := c.PostForm("type")
-		pw := c.PostForm("password")
-		ot := c.PostForm("onetime")
-		exp := c.PostForm("expires")
+		// Explicitly parse the multipart form before accessing form values.
+		// This is crucial for handling mixed file/text forms reliably in Gin.
+		if err := c.Request.ParseMultipartForm(cfg.MaxFileSize + 1024*1024); err != nil { // Add buffer to max size
+			log.Println("Error parsing multipart form:", err)
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid form data or file too large"})
+			return
+		}
+
+		// Use c.Request.FormValue now that the form is parsed.
+		stype := c.Request.FormValue("type")
+		pw := c.Request.FormValue("password")
+		ot := c.Request.FormValue("onetime")
+		exp := c.Request.FormValue("expires")
 
 		log.Println("CreateSend called with type:", stype)
 
@@ -63,7 +72,7 @@ func CreateSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
 		key := deriveKey(pw, cfg)
 
 		if stype == "text" {
-			text := c.PostForm("data")
+			text := c.Request.FormValue("data")
 			if text == "" {
 				log.Println("Error: 'data' field is empty for text type")
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Data field is required for text type"})
@@ -92,30 +101,24 @@ func CreateSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
 		}
 
 		if stype == "file" {
-			file, err := c.FormFile("file")
+			// Use c.Request.FormFile now that the form is parsed.
+			file, header, err := c.Request.FormFile("file")
 			if err != nil {
 				log.Println("Error retrieving file from form data:", err)
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve file from form data"})
 				return
 			}
+			defer file.Close()
 
-			log.Println("Received file:", file.Filename, "Size:", file.Size)
+			log.Println("Received file:", header.Filename, "Size:", header.Size)
 
-			if file.Size > cfg.MaxFileSize {
-				log.Printf("Error: File size (%d bytes) exceeds maximum allowed size (%d bytes)\n", file.Size, cfg.MaxFileSize)
+			if header.Size > cfg.MaxFileSize {
+				log.Printf("Error: File size (%d bytes) exceeds maximum allowed size (%d bytes)\n", header.Size, cfg.MaxFileSize)
 				c.AbortWithStatusJSON(http.StatusRequestEntityTooLarge, gin.H{"error": "File size exceeds the maximum allowed limit"})
 				return
 			}
 
-			f, err := file.Open()
-			if err != nil {
-				log.Println("Error opening uploaded file:", err)
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to open uploaded file"})
-				return
-			}
-			defer f.Close()
-
-			data, err := ioutil.ReadAll(f)
+			data, err := io.ReadAll(file)
 			if err != nil {
 				log.Println("Error reading file data:", err)
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file data"})
@@ -130,8 +133,7 @@ func CreateSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
 			}
 
 			fp := filepath.Join(cfg.StoragePath, hash)
-			err = ioutil.WriteFile(fp, []byte(enc), 0600)
-			if err != nil {
+			if err := os.WriteFile(fp, []byte(enc), 0600); err != nil {
 				log.Println("Error writing encrypted file to storage:", err)
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to write encrypted file to storage"})
 				return
@@ -143,7 +145,7 @@ func CreateSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
 				Hash:      hash,
 				Type:      "file",
 				FilePath:  fp,
-				FileName:  file.Filename,
+				FileName:  header.Filename,
 				Password:  pw,
 				OneTime:   oneTime,
 				ExpiresAt: expiresAt,
@@ -192,7 +194,7 @@ func GetSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
 			}
 			c.String(http.StatusOK, string(d))
 		} else {
-			d, err := ioutil.ReadFile(s.FilePath)
+			d, err := os.ReadFile(s.FilePath)
 			if err != nil {
 				c.AbortWithStatus(http.StatusInternalServerError)
 				return

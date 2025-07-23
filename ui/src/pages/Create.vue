@@ -88,11 +88,11 @@
 import { ref, watch } from 'vue';
 import { createSend } from '../services/api.js';
 import PasswordInput from '../components/PasswordInput.vue';
-import { formStore } from '../stores/formStore.js'; // Import the store
+import { formStore } from '../stores/formStore.js';
 
 const type = ref('text');
 const textSecret = ref('');
-const fileBlob = ref(null);
+// v-file-input uses an array for its model, so initialize it as such.
 const files = ref([]);
 const password = ref('');
 const oneTime = ref(false);
@@ -111,14 +111,6 @@ const expirationOptions = [
   { title: '3 Days', value: '72h' },
   { title: '1 Week', value: '168h' }
 ];
-
-watch(files, (newFiles) => {
-  if (Array.isArray(newFiles) && newFiles.length > 0) {
-    fileBlob.value = newFiles[0];
-  } else {
-    fileBlob.value = null;
-  }
-});
 
 function resetForm() {
   type.value = 'text';
@@ -152,12 +144,17 @@ async function handleSubmit() {
     }
     formData.append('data', textSecret.value);
   } else if (type.value === 'file') {
-    if (!fileBlob.value) {
-      errorMessage.value = 'Please select a file';
+    // Debug log
+    console.log('files.value:', files.value);
+    // Ensure files.value is an array and has a File object
+    const fileArr = Array.isArray(files.value) ? files.value : (files.value ? [files.value] : []);
+    if (!fileArr.length || !(fileArr[0] instanceof File)) {
+      errorMessage.value = 'Please select a file 😟';
       loading.value = false;
       return;
     }
-    formData.append('file', fileBlob.value);
+    const fileToUpload = fileArr[0];
+    formData.append('file', fileToUpload, fileToUpload.name);
   }
 
   if (password.value.trim()) {
@@ -171,6 +168,13 @@ async function handleSubmit() {
   try {
     const result = await createSend(formData);
     resultHash.value = result.hash;
+    // Clear form inputs but keep the result hash visible
+    type.value = 'text';
+    textSecret.value = '';
+    files.value = [];
+    password.value = '';
+    oneTime.value = false;
+    expires.value = '24h';
   } catch (err) {
     errorMessage.value = err.message || 'Failed to create secret';
   } finally {
