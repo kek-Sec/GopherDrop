@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.9]
+
+### Changed
+- Improved the "Type" selector on the Create Secret page to use a visually appealing slider toggle with icons for "Text" and "File".
+- After creating a secret, all input fields are now cleared for a better user experience.
+- Enhanced file upload validation to reliably detect selected files and prevent false "Please select a file" errors.
+
+### Fixed
+- Fixed an issue where file uploads would sometimes incorrectly show "Please select a file" even when a file was chosen.
+
+### UI/UX
+- The form now resets when navigating to the Create page via the logo or Create+ button.
+
 ## [1.0.8]
 ### UI Enhancements
 - **Redesigned Header and Footer**: Modernized header/footer with theme toggle and improved visual consistency.
