@@ -4,14 +4,21 @@
       <v-card-title class="text-h5 text-md-h4 font-weight-bold text-center mb-4">Create a New Secret 🔑</v-card-title>
       <v-card-text>
         <v-form @submit.prevent="handleSubmit">
-          <v-select
-            label="Type"
+          <v-btn-toggle
             v-model="type"
-            :items="['text', 'file']"
-            required
-            variant="outlined"
-            class="mb-2"
-          ></v-select>
+            mandatory
+            class="mb-4 d-flex justify-center"
+            color="primary"
+            rounded
+            group
+          >
+            <v-btn value="text" class="px-6" rounded>
+              <v-icon left>mdi-text</v-icon> Text
+            </v-btn>
+            <v-btn value="file" class="px-6" rounded>
+              <v-icon left>mdi-file</v-icon> File
+            </v-btn>
+          </v-btn-toggle>
 
           <v-textarea
             v-if="type === 'text'"
