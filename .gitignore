@@ -3,3 +3,4 @@ node_modules
 ui/dist
 /.vs
 /.vscode
+.codex
