@@ -149,8 +149,74 @@ MAX_FILE_SIZE=10485760
 | Method | Endpoint           | Description                              |
 |--------|--------------------|------------------------------------------|
 | `POST` | `/send`            | Create a new send (text or file)         |
+| `POST` | `/send/text`       | Create a text send (curl-friendly)       |
+| `POST` | `/send/file`       | Create a file send (curl-friendly)       |
 | `GET`  | `/send/:id`        | Retrieve a send by its hash              |
 | `GET`  | `/send/:id/check`  | Check if a send requires a password      |
+
+### **curl Examples**
+
+Base URL:
+
+```bash
+BASE_URL="http://localhost:8080"
+```
+
+Create a text paste from a raw request body:
+
+```bash
+curl -sS \
+  -X POST "$BASE_URL/send/text?expires=24h&onetime=true&password=my-pass" \
+  -H "Content-Type: text/plain" \
+  --data-binary "my secret text"
+```
+
+Create a text paste using form data:
+
+```bash
+curl -sS \
+  -X POST "$BASE_URL/send/text" \
+  -d "data=my secret text" \
+  -d "expires=24h" \
+  -d "onetime=true"
+```
+
+Create a file paste with multipart upload:
+
+```bash
+curl -sS \
+  -X POST "$BASE_URL/send/file?expires=24h&onetime=true&password=my-pass" \
+  -F "file=@./secret.pdf"
+```
+
+Create a file paste from raw binary (no multipart):
+
+```bash
+curl -sS \
+  -X POST "$BASE_URL/send/file?filename=secret.pdf&expires=24h" \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary "@./secret.pdf"
+```
+
+Backward-compatible create endpoint (`/send`) still works with `type=text` or `type=file`.
+
+Response shape for create endpoints:
+
+```json
+{"hash":"<send-hash>"}
+```
+
+Extract hash and print a ready-to-share URL:
+
+```bash
+HASH=$(curl -sS -X POST "$BASE_URL/send/text" --data-binary "my secret" | jq -r '.hash')
+echo "$BASE_URL/send/$HASH"
+```
+
+Create options accepted on all create endpoints:
+- `password`: Optional decryption password.
+- `onetime`: `true` or `false`.
+- `expires`: Go duration format (examples: `30m`, `24h`, `7d` is not valid; use `168h`).
 
 
 ---

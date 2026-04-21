@@ -29,6 +29,8 @@ func setupTestDB() *gorm.DB {
 func setupTestRouter(cfg config.Config, db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 	r.POST("/send", CreateSend(cfg, db))
+	r.POST("/send/text", CreateTextSend(cfg, db))
+	r.POST("/send/file", CreateFileSend(cfg, db))
 	r.GET("/send/:id", GetSend(cfg, db))
 	r.GET("/send/:id/check", CheckPasswordProtection(db))
 	return r
@@ -132,6 +134,46 @@ func TestCreateSendText(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/send", body)
 	req.Header.Set("Content-Type", contentType)
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200 got %d", w.Code)
+	}
+}
+
+func TestCreateTextSendWithRawBody(t *testing.T) {
+	db := setupTestDB()
+	cfg := config.Config{
+		SecretKey:   "supersecretkeysupersecretkey32",
+		MaxFileSize: 1024 * 1024, // 1MB
+	}
+	r := setupTestRouter(cfg, db)
+
+	body := bytes.NewBufferString("this came from curl raw body")
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/send/text", body)
+	req.Header.Set("Content-Type", "text/plain")
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200 got %d", w.Code)
+	}
+}
+
+func TestCreateFileSendWithRawBody(t *testing.T) {
+	db := setupTestDB()
+	cfg := config.Config{
+		SecretKey:   "supersecretkeysupersecretkey32",
+		MaxFileSize: 1024 * 1024, // 1MB
+	}
+	r := setupTestRouter(cfg, db)
+
+	body := bytes.NewBufferString("file-bytes-from-curl")
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/send/file?filename=raw.txt", body)
+	req.Header.Set("Content-Type", "application/octet-stream")
 	r.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {

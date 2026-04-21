@@ -8,8 +8,8 @@ import (
 	"github.com/jinzhu/gorm"
 	"golang.org/x/time/rate"
 
-	"github.com/kek-Sec/gopherdrop/internal/handlers"
 	"github.com/kek-Sec/gopherdrop/internal/config"
+	"github.com/kek-Sec/gopherdrop/internal/handlers"
 )
 
 // Define a rate limiter with 1 request per second and a burst of 5.
@@ -40,6 +40,8 @@ func SetupRouter(cfg config.Config, db *gorm.DB) *gin.Engine {
 
 	// Apply rate limiting only to the POST /send endpoint
 	r.POST("/send", rateLimiterMiddleware, handlers.CreateSend(cfg, db))
+	r.POST("/send/text", rateLimiterMiddleware, handlers.CreateTextSend(cfg, db))
+	r.POST("/send/file", rateLimiterMiddleware, handlers.CreateFileSend(cfg, db))
 
 	// Other routes without rate limiting
 	r.GET("/send/:id", handlers.GetSend(cfg, db))

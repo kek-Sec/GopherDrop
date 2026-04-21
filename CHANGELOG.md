@@ -1,5 +1,20 @@
 # Changelog
 
+## [10.0.10]
+
+### Added
+- Added dedicated curl-friendly creation endpoints:
+  - `POST /send/text` for text pastes
+  - `POST /send/file` for file pastes
+- Added support for raw-body paste creation:
+  - Text via raw request body to `/send/text`
+  - Files via raw binary body to `/send/file` with `filename` query param (or `X-Filename` header)
+- Expanded API documentation in `Readme.md` with practical curl examples for text and file flows.
+
+### Changed
+- Kept `POST /send` backward-compatible while improving create handling for CLI workflows.
+- Hardened file storage handling to fall back to a safe temp directory when `STORAGE_PATH` is unset.
+
 ## [1.0.9]
 
 ### Changed

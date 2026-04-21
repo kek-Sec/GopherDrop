@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,20 +23,32 @@ import (
 // CreateSend handles creation of a new send.
 // It accepts form data for type (text/file), optional password, one-time use, and expiration.
 func CreateSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
+	return createSendWithType(cfg, db, "")
+}
+
+// CreateTextSend handles text send creation without requiring a type field.
+func CreateTextSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
+	return createSendWithType(cfg, db, "text")
+}
+
+// CreateFileSend handles file send creation without requiring a type field.
+func CreateFileSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
+	return createSendWithType(cfg, db, "file")
+}
+
+func createSendWithType(cfg config.Config, db *gorm.DB, forcedType string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Explicitly parse the multipart form before accessing form values.
-		// This is crucial for handling mixed file/text forms reliably in Gin.
-		if err := c.Request.ParseMultipartForm(cfg.MaxFileSize + 1024*1024); err != nil { // Add buffer to max size
-			log.Println("Error parsing multipart form:", err)
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid form data or file too large"})
-			return
+		stype := strings.TrimSpace(forcedType)
+		if stype == "" {
+			stype = strings.TrimSpace(c.PostForm("type"))
+			if stype == "" {
+				stype = strings.TrimSpace(c.Query("type"))
+			}
 		}
 
-		// Use c.Request.FormValue now that the form is parsed.
-		stype := c.Request.FormValue("type")
-		pw := c.Request.FormValue("password")
-		ot := c.Request.FormValue("onetime")
-		exp := c.Request.FormValue("expires")
+		pw := firstNonEmpty(c.PostForm("password"), c.Query("password"))
+		ot := firstNonEmpty(c.PostForm("onetime"), c.Query("onetime"))
+		exp := firstNonEmpty(c.PostForm("expires"), c.Query("expires"))
 
 		log.Println("CreateSend called with type:", stype)
 
@@ -44,7 +58,14 @@ func CreateSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
-		oneTime := (ot == "true")
+		oneTime, err := strconv.ParseBool(ot)
+		if ot == "" {
+			oneTime = false
+		} else if err != nil {
+			log.Println("Error parsing onetime flag:", err)
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid onetime value"})
+			return
+		}
 		log.Println("One-Time:", oneTime)
 
 		var expiresAt time.Time
@@ -72,7 +93,12 @@ func CreateSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
 		key := deriveKey(pw, cfg)
 
 		if stype == "text" {
-			text := c.Request.FormValue("data")
+			text, err := readTextPayload(c, cfg.MaxFileSize)
+			if err != nil {
+				log.Println("Error reading text payload:", err)
+				c.AbortWithStatusJSON(http.StatusRequestEntityTooLarge, gin.H{"error": "Text size exceeds the maximum allowed limit"})
+				return
+			}
 			if text == "" {
 				log.Println("Error: 'data' field is empty for text type")
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Data field is required for text type"})
@@ -101,38 +127,38 @@ func CreateSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
 		}
 
 		if stype == "file" {
-			// Use c.Request.FormFile now that the form is parsed.
-			file, header, err := c.Request.FormFile("file")
+			fileData, fileName, err := readFilePayload(c, cfg.MaxFileSize)
 			if err != nil {
-				log.Println("Error retrieving file from form data:", err)
+				log.Println("Error retrieving file from request:", err)
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve file from form data"})
 				return
 			}
-			defer file.Close()
-
-			log.Println("Received file:", header.Filename, "Size:", header.Size)
-
-			if header.Size > cfg.MaxFileSize {
-				log.Printf("Error: File size (%d bytes) exceeds maximum allowed size (%d bytes)\n", header.Size, cfg.MaxFileSize)
+			if len(fileData) > int(cfg.MaxFileSize) {
+				log.Printf("Error: File size (%d bytes) exceeds maximum allowed size (%d bytes)\n", len(fileData), cfg.MaxFileSize)
 				c.AbortWithStatusJSON(http.StatusRequestEntityTooLarge, gin.H{"error": "File size exceeds the maximum allowed limit"})
 				return
 			}
 
-			data, err := io.ReadAll(file)
-			if err != nil {
-				log.Println("Error reading file data:", err)
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file data"})
-				return
-			}
+			log.Println("Received file:", fileName, "Size:", len(fileData))
 
-			enc, err := security.EncryptData(data, key)
+			enc, err := security.EncryptData(fileData, key)
 			if err != nil {
 				log.Println("Error encrypting file data:", err)
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to encrypt file data"})
 				return
 			}
 
-			fp := filepath.Join(cfg.StoragePath, hash)
+			storagePath := cfg.StoragePath
+			if strings.TrimSpace(storagePath) == "" {
+				storagePath = os.TempDir()
+			}
+			if err := os.MkdirAll(storagePath, 0700); err != nil {
+				log.Println("Error preparing storage path:", err)
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to prepare storage path"})
+				return
+			}
+
+			fp := filepath.Join(storagePath, hash)
 			if err := os.WriteFile(fp, []byte(enc), 0600); err != nil {
 				log.Println("Error writing encrypted file to storage:", err)
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to write encrypted file to storage"})
@@ -145,7 +171,7 @@ func CreateSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
 				Hash:      hash,
 				Type:      "file",
 				FilePath:  fp,
-				FileName:  header.Filename,
+				FileName:  sanitizeFilename(fileName),
 				Password:  pw,
 				OneTime:   oneTime,
 				ExpiresAt: expiresAt,
@@ -159,6 +185,73 @@ func CreateSend(cfg config.Config, db *gorm.DB) gin.HandlerFunc {
 		log.Println("Error: Unsupported send type:", stype)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Unsupported send type"})
 	}
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, value := range values {
+		if strings.TrimSpace(value) != "" {
+			return strings.TrimSpace(value)
+		}
+	}
+	return ""
+}
+
+func readTextPayload(c *gin.Context, maxSize int64) (string, error) {
+	if text, ok := c.GetPostForm("data"); ok {
+		return text, nil
+	}
+
+	limited := io.LimitReader(c.Request.Body, maxSize+1)
+	raw, err := io.ReadAll(limited)
+	if err != nil {
+		return "", err
+	}
+	if int64(len(raw)) > maxSize {
+		return "", fmt.Errorf("text payload exceeds max size")
+	}
+
+	return string(raw), nil
+}
+
+func readFilePayload(c *gin.Context, maxSize int64) ([]byte, string, error) {
+	if fileHeader, err := c.FormFile("file"); err == nil {
+		file, err := fileHeader.Open()
+		if err != nil {
+			return nil, "", err
+		}
+		defer file.Close()
+
+		limited := io.LimitReader(file, maxSize+1)
+		raw, err := io.ReadAll(limited)
+		if err != nil {
+			return nil, "", err
+		}
+		return raw, fileHeader.Filename, nil
+	}
+
+	limited := io.LimitReader(c.Request.Body, maxSize+1)
+	raw, err := io.ReadAll(limited)
+	if err != nil {
+		return nil, "", err
+	}
+	if len(raw) == 0 {
+		return nil, "", fmt.Errorf("empty file payload")
+	}
+
+	fileName := firstNonEmpty(c.Query("filename"), c.GetHeader("X-Filename"))
+	if fileName == "" {
+		fileName = "upload.bin"
+	}
+
+	return raw, fileName, nil
+}
+
+func sanitizeFilename(name string) string {
+	base := filepath.Base(strings.TrimSpace(name))
+	if base == "" || base == "." || base == string(filepath.Separator) {
+		return "upload.bin"
+	}
+	return base
 }
 
 // GetSend handles retrieving and decrypting a send by its hash.

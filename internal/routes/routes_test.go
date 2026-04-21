@@ -14,6 +14,7 @@ import (
 	"github.com/kek-Sec/gopherdrop/internal/config"
 	"github.com/kek-Sec/gopherdrop/internal/models"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/time/rate"
 )
 
 func setupTestDB() *gorm.DB {
@@ -41,10 +42,11 @@ func setupTestDB() *gorm.DB {
 	return db
 }
 
-
 func setupTestRouter() *gin.Engine {
+	limiter = rate.NewLimiter(1, 6)
 	cfg := config.Config{
-		SecretKey: "supersecretkey",
+		SecretKey:   "supersecretkey",
+		MaxFileSize: 1024 * 1024,
 	}
 	db := setupTestDB()
 	return SetupRouter(cfg, db)
@@ -60,6 +62,8 @@ func TestRoutesExist(t *testing.T) {
 		status   int
 	}{
 		{"POST", "/send", "type=text&data=test", http.StatusOK},
+		{"POST", "/send/text", "data=test", http.StatusOK},
+		{"POST", "/send/file", "test file payload", http.StatusBadRequest},
 		{"GET", "/send/testhash", "", http.StatusNotFound},
 		{"GET", "/send/testhash/check", "", http.StatusNotFound},
 	}
@@ -69,7 +73,11 @@ func TestRoutesExist(t *testing.T) {
 			var req *http.Request
 			if tt.method == "POST" {
 				req = httptest.NewRequest(tt.method, tt.endpoint, strings.NewReader(tt.payload))
-				req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				if tt.endpoint == "/send/file" {
+					req.Header.Set("Content-Type", "application/octet-stream")
+				} else {
+					req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+				}
 			} else {
 				req = httptest.NewRequest(tt.method, tt.endpoint, nil)
 			}
@@ -80,7 +88,6 @@ func TestRoutesExist(t *testing.T) {
 		})
 	}
 }
-
 
 func TestCORSHeaders(t *testing.T) {
 	router := setupTestRouter()
@@ -103,8 +110,8 @@ func TestRateLimiter(t *testing.T) {
 	// Define a payload for the POST request
 	payload := "type=text&data=test"
 
-	// Simulate 5 requests (the burst capacity) in quick succession with slight delays
-	for i := 0; i < 5; i++ {
+	// Simulate 6 requests (the burst capacity) in quick succession.
+	for i := 0; i < 6; i++ {
 		req := httptest.NewRequest("POST", "/send", strings.NewReader(payload))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
@@ -112,17 +119,14 @@ func TestRateLimiter(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code, "Request %d should succeed within the burst capacity", i+1)
-
-		// Introduce a small delay (e.g., 10 milliseconds) between requests
-		time.Sleep(10 * time.Millisecond)
 	}
 
-	// The 6th request should be rate limited and return a 429 status
+	// The 7th request should be rate limited and return a 429 status
 	req := httptest.NewRequest("POST", "/send", strings.NewReader(payload))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
-	assert.Equal(t, http.StatusTooManyRequests, w.Code, "6th request should be rate limited")
+	assert.Equal(t, http.StatusTooManyRequests, w.Code, "7th request should be rate limited")
 }
