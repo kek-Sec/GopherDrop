@@ -133,7 +133,7 @@ func createSendWithType(cfg config.Config, db *gorm.DB, forcedType string) gin.H
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve file from form data"})
 				return
 			}
-			if len(fileData) > int(cfg.MaxFileSize) {
+			if int64(len(fileData)) > cfg.MaxFileSize {
 				log.Printf("Error: File size (%d bytes) exceeds maximum allowed size (%d bytes)\n", len(fileData), cfg.MaxFileSize)
 				c.AbortWithStatusJSON(http.StatusRequestEntityTooLarge, gin.H{"error": "File size exceeds the maximum allowed limit"})
 				return
